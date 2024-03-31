@@ -1,5 +1,5 @@
 import { BlocBase, BlocInstanceId } from './BlocBase';
-import { BlocBaseAbstract, BlocConstructor } from './types';
+import { BlocBaseAbstract, BlocConstructor, BlocGeneric } from './types';
 import { BlocProps } from './Cubit';
 import { BlacPlugin } from './BlacPlugin';
 
@@ -208,7 +208,7 @@ export class Blac {
     return newBloc as InstanceType<BlocConstructor<B>>;
   }
 
-  getBloc<B extends BlocBase<S>, S>(
+  getBloc<B extends BlocGeneric<S, A>, S = any, A = any>(
     blocClass: BlocConstructor<B>,
     options: {
       id?: BlocInstanceId;

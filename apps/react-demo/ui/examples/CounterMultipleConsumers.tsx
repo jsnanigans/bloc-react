@@ -23,11 +23,6 @@ const ComponentA: FC = () => {
   return <button onClick={increment}>A: {count} - Increment</button>;
 };
 
-const ComponentB: FC = () => {
-  const [{ count }, { increment }] = useBloc(CounterMultipleConsumerBloc);
-  return <button onClick={increment}>B: {count} - Increment</button>;
-};
-
 const CounterMultipleConsumers: FC = () => {
   const [{ showDynamic }, { toggleDynamic }] = useBloc(
     CounterMultipleConsumerBloc,

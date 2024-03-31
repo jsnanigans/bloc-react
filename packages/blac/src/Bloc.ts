@@ -6,25 +6,19 @@ export abstract class Bloc<S, A> extends BlocBase<S> {
 
   /**
    * The reducer is called whenever a new action is emited,
-   * @param action: the action from "emit"
+   * @param action: the action from "add"
    * @param state: the current state
    * @returns: the new state
    */
   abstract reducer(action: A, state: S): S;
 
   /**
-   * Emit a new action, the reducer should digest the action and update the state accordingly
+   * Add a new action, the reducer should digest the action and update the state accordingly
    * @param action: action t obe sent to the reducer
    */
-  emit = (action: A): void => {
+  add = (action: A): void => {
     const oldState = this.state;
     const newState = this.reducer(action, this.state);
-    this._state = newState;
-    this.observer.notify(newState, oldState);
-
-    this.blac.report(BlacEvent.STATE_CHANGED, this, {
-      newState,
-      oldState,
-    });
+    this.pushState(newState, oldState);
   };
 }

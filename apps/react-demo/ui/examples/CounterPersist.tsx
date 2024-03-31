@@ -1,4 +1,4 @@
-import { Cubit, Persist } from 'blac';
+import { Bloc, Cubit, Persist } from 'blac';
 import React, { FC } from 'react';
 import { useBloc } from '@blac/react';
 
@@ -8,17 +8,50 @@ class CounterPersistCubit extends Cubit<number> {
       defaultValue: 0,
     }),
   ];
-  add = (amount: number) => () => this.emit(this.state + amount);
+
+  update = (amount: number) => () => this.emit(this.state + amount);
+}
+
+enum CounterPersistActions {
+  increment = 'increment',
+  decrement = 'decrement',
+}
+
+class CounterPersistBloc extends Bloc<number, CounterPersistActions> {
+  static addons = [
+    Persist({
+      defaultValue: 0,
+    }),
+  ];
+
+  reducer(action: CounterPersistActions, state: number) {
+    switch (action) {
+      case 'increment':
+        return state + 1;
+      case 'decrement':
+        return state - 1;
+    }
+    return state;
+  }
 }
 
 const CounterWithCubitPersist: FC = () => {
-  const [count, { add }] = useBloc(CounterPersistCubit);
+  const [count, cubit] = useBloc(CounterPersistCubit);
+  const [count2, bloc] = useBloc(CounterPersistBloc);
 
   return (
     <>
-      <button onClick={add(-1)}>-</button>
+      <button onClick={cubit.update(-1)}>-</button>
       {` ${count} `}
-      <button onClick={add(1)}>+</button>
+      <button onClick={cubit.update(1)}>+</button>
+      <hr />
+      <button onClick={() => bloc.add(CounterPersistActions.decrement)}>
+        -
+      </button>
+      {` ${count2} `}
+      <button onClick={() => bloc.add(CounterPersistActions.increment)}>
+        +
+      </button>
     </>
   );
 };

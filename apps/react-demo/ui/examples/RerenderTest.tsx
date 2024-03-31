@@ -32,13 +32,17 @@ const Flash: FC<{ children?: ReactNode }> = ({ children }) => {
 
 // Only show the name
 const ShowName: FC = () => {
-  const [{ name }] = useBloc(DemoCubit, ({ name }) => [name]);
+  const [{ name }] = useBloc(DemoCubit, {
+    dependencySelector: ({ name }) => [name],
+  });
   return <Flash>Name: {name}</Flash>;
 };
 
 // Input to change the email
 const ChangeName: FC = () => {
-  const [{ name }, { setName }] = useBloc(DemoCubit, ({ name }) => [name]);
+  const [{ name }, { setName }] = useBloc(DemoCubit, {
+    dependencySelector: ({ name }) => [name],
+  });
   return (
     <Flash>
       Name: <input type="text" value={name} onChange={setName} />
@@ -48,7 +52,9 @@ const ChangeName: FC = () => {
 
 // Only show the email
 const ShowEmail: FC = () => {
-  const [{ email }] = useBloc(DemoCubit, ({ email }) => [email]);
+  const [{ email }] = useBloc(DemoCubit, {
+    dependencySelector: ({ email }) => [email],
+  });
   return <Flash>Email: {email}</Flash>;
 };
 
@@ -57,13 +63,17 @@ const isEmail = (email: string) => {
   return reg.test(email);
 };
 const ShowIsEmail: FC = () => {
-  const [{ email }] = useBloc(DemoCubit, ({ email }) => [isEmail(email)]);
+  const [{ email }] = useBloc(DemoCubit, {
+    dependencySelector: ({ email }) => [isEmail(email)],
+  });
   return <Flash>Is Email: {isEmail(email) ? 'YES' : 'NO'}</Flash>;
 };
 
 // Input to change the email
 const ChangeEmail: FC = () => {
-  const [{ email }, { setEmail }] = useBloc(DemoCubit, ({ email }) => [email]);
+  const [{ email }, { setEmail }] = useBloc(DemoCubit, {
+    dependencySelector: ({ email }) => [email],
+  });
   return (
     <Flash>
       Email: <input type="text" value={email} onChange={setEmail} />

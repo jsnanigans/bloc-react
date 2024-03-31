@@ -34,6 +34,9 @@ import NoSharedStateText from './examples/NoSharedState.tsx?raw';
 import QueryOtherBlocs from './examples/QueryOtherBlocs';
 import QueryOtherBlocsText from './examples/QueryOtherBlocs.tsx?raw';
 
+import CrossDependency from './examples/CrossDependency';
+import CrossDependencyText from './examples/CrossDependency.tsx?raw';
+
 interface DemoData {
   name: string;
   description?: React.ReactNode;
@@ -125,6 +128,16 @@ class DemoPageBloc extends Cubit<MainBlocState> {
       description: 'Share one Bloc between multiple ui',
       component: <CounterMultipleConsumers />,
       code: CounterMultipleConsumersAsText,
+    },
+    {
+      name: 'Cross Dependency',
+      description: (
+        <>
+          <p></p>
+        </>
+      ),
+      component: <CrossDependency />,
+      code: CrossDependencyText,
     },
     {
       name: 'Counter Multiple Instances',

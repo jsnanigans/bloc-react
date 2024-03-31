@@ -1,4 +1,5 @@
-import { BlocBase, BlocInstanceId } from '../BlocBase';
+import { Bloc } from '../Bloc';
+import { BlocInstanceId } from '../BlocBase';
 import { Cubit } from '../Cubit';
 import BlacAddon, { BlacAddonEmit, BlacAddonInit } from './BlacAddon';
 
@@ -39,12 +40,14 @@ export function Persist(
     }
   };
 
-  const onInit: BlacAddonInit = (e) => {
+  const onInit: BlacAddonInit = (
+    e: Bloc<unknown, unknown> | Cubit<unknown>,
+  ) => {
     const id = localStorageKey ?? e.id;
 
     const value = getFromLocalStorage(id);
     if (typeof value !== undefined) {
-      e.emit(value);
+      e.pushState(value, null);
     }
   };
 

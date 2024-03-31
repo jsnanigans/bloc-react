@@ -8,17 +8,17 @@ export class CounterMultiInstanceBloc extends Cubit<number> {
 }
 
 const ComponentA: FC = () => {
-  const [count, { increment }] = useBloc(CounterMultiInstanceBloc, 'a');
+  const [count, { increment }] = useBloc(CounterMultiInstanceBloc, { id: 'a' });
   return <button onClick={increment}>A: {count} - Increment</button>;
 };
 
 const ComponentB: FC = () => {
-  const [count, { increment }] = useBloc(CounterMultiInstanceBloc, 'b');
+  const [count, { increment }] = useBloc(CounterMultiInstanceBloc, { id: 'b' });
   return <button onClick={increment}>B: {count} - Increment</button>;
 };
 
 const ComponentA2: FC = () => {
-  const [count, { increment }] = useBloc(CounterMultiInstanceBloc, 'a');
+  const [count, { increment }] = useBloc(CounterMultiInstanceBloc, { id: 'a' });
   return <button onClick={increment}>A - 2: {count} - Increment</button>;
 };
 

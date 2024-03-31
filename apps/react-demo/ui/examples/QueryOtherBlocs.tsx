@@ -1,11 +1,5 @@
 import type { FC } from 'react';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useEffect, useState } from 'react';
 import { Blac, Cubit } from 'blac';
 import { useBloc } from '@blac/react';
 import { Canvas, useFrame } from '@react-three/fiber';
@@ -26,8 +20,8 @@ class IsolatedBloc extends Cubit<
   constructor() {
     super({ x: 0, y: 0 });
     this._state = {
-      x: this.props.start[0],
-      y: this.props.start[1],
+      x: this.props?.start[0] ?? 0,
+      y: this.props?.start[1] ?? 0,
     };
 
     const b = this.blac.getAllBlocs(IsolatedBloc);
@@ -235,7 +229,7 @@ const QueryOtherBlocs: FC = () => {
       <Canvas className="jumper-box">
         <Ani />
         <ambientLight intensity={Math.PI} />
-        {Array.from({ length: 800 }).map((_, i) => (
+        {Array.from({ length: 400 }).map((_, i) => (
           <Jumper index={i} key={i} />
         ))}
       </Canvas>

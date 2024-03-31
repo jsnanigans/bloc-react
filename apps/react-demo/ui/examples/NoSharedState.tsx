@@ -15,13 +15,13 @@ class IsolatedBloc extends Cubit<
   constructor() {
     super({ x: 150, y: 100, c: 'orange' });
     this.startJumping();
-    this.patch({ x: this.props.startX });
+    this.patch({ x: this.props?.startX ?? 0 });
   }
 
   startJumping = () => {
     this.velocity = {
-      x: this.props.speedX,
-      y: this.props.speedY,
+      x: this.props?.speedX ?? 0,
+      y: this.props?.speedY ?? 0,
     };
   };
 
@@ -30,7 +30,7 @@ class IsolatedBloc extends Cubit<
   };
 
   move = (x: number, y: number) => {
-    const next = { x, y, c: this.props.color };
+    const next = { x, y, c: this.props?.color ?? 'orange' };
 
     if (x < 0) {
       next.x = 0;

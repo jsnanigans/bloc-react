@@ -23,13 +23,13 @@ class CounterBloc extends Bloc<CounterState, CounterActions> {
 }
 
 const CounterWithBloc: FC = () => {
-  const [count, { emit }] = useBloc(CounterBloc);
+  const [count, { add }] = useBloc(CounterBloc);
 
   return (
     <>
-      <button onClick={() => emit(CounterActions.decrement)}>-</button>
+      <button onClick={() => add(CounterActions.decrement)}>-</button>
       &nbsp;{count}&nbsp;
-      <button onClick={() => emit(CounterActions.increment)}>+</button>
+      <button onClick={() => add(CounterActions.increment)}>+</button>
     </>
   );
 };

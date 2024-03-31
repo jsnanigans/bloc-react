@@ -1,12 +1,18 @@
-import { BlocBase } from 'blac';
+import { BlocBase, BlocGeneric, InferStateFromGeneric } from 'blac';
 
-export interface ExternalStore<B extends BlocBase<S>, S> {
+export interface ExternalStore<
+  B extends BlocGeneric<any, any>,
+  S extends InferStateFromGeneric<B>,
+> {
   subscribe: (onStoreChange: () => void) => () => void;
   getSnapshot: () => S;
   getServerSnapshot?: () => S;
 }
 
-const externalBlocStore = <B extends BlocBase<S>, S>(
+const externalBlocStore = <
+  B extends BlocGeneric<any, any>,
+  S extends InferStateFromGeneric<B>,
+>(
   bloc: B,
   dependencyArray: (state: S) => unknown[],
 ): ExternalStore<B, S> => {
