@@ -45,6 +45,7 @@ const externalBlocStore = <
           });
         }
       });
+
       return () => {
         unSub();
       };

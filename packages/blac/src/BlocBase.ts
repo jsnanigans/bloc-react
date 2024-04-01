@@ -81,8 +81,10 @@ export abstract class BlocBase<S, P extends BlocProps = {}> {
   }
 
   handleUnsubscribe = (callback: BlacObserver<S>): void => {
-    this.observer.unsubscribe(callback);
-    this.blac.report(BlacEvent.LISTENER_REMOVED, this);
+    setTimeout(() => {
+      this.observer.unsubscribe(callback);
+      this.blac.report(BlacEvent.LISTENER_REMOVED, this);
+    }, 0);
   };
 
   connectAddons = () => {

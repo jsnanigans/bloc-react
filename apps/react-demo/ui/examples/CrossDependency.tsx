@@ -8,7 +8,11 @@ class TodoListBloc extends Cubit<string[]> {
 
   constructor() {
     super(['Learn about BLoC pattern', 'Learn about Cubit pattern']);
+
     this.userBloc = this.blac.getBloc(UserBloc);
+    // userBloc.addSubscriber((state) => {
+    //   this.userName = state;
+    // });
   }
 
   addTodo = (text: string) => {
