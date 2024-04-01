@@ -1,6 +1,7 @@
 export type BlacObserver<S> = (
   newState: S,
   oldState: S,
+  action?: any,
 ) => void | Promise<void>;
 
 export class BlacObservable<S> {
@@ -23,8 +24,8 @@ export class BlacObservable<S> {
     this._observers.delete(observer);
   }
 
-  notify(newState: S, oldState: S) {
-    this._observers.forEach((observer) => observer(newState, oldState));
+  notify(newState: S, oldState: S, action?: any) {
+    this._observers.forEach((observer) => observer(newState, oldState, action));
   }
 
   dispose() {

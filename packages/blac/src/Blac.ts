@@ -1,5 +1,10 @@
 import { BlocBase, BlocInstanceId } from './BlocBase';
-import { BlocBaseAbstract, BlocConstructor, BlocGeneric } from './types';
+import {
+  BlocBaseAbstract,
+  BlocConstructor,
+  BlocGeneric,
+  InferStateFromGeneric,
+} from './types';
 import { BlocProps } from './Cubit';
 import { BlacPlugin } from './BlacPlugin';
 
@@ -208,17 +213,18 @@ export class Blac {
     return newBloc as InstanceType<BlocConstructor<B>>;
   }
 
-  getBloc<B extends BlocGeneric<S, A>, S = any, A = any>(
-    blocClass: BlocConstructor<B>,
+  getBloc<B extends BlocConstructor<BlocGeneric<S, A>>, S = any, A = any>(
+    blocClass: B,
     options: {
       id?: BlocInstanceId;
       props?: BlocProps;
       reconnect?: boolean;
     } = {},
-  ): InstanceType<BlocConstructor<B>> {
-    const base = blocClass as unknown as BlocBaseAbstract;
+  ): InstanceType<B> {
+    const base = blocClass as unknown as InstanceType<B>;
     const isIsolated = base.isolated;
     const id = options.id || blocClass.name;
+
     const registered = isIsolated
       ? this.findIsolatedBlocInstance(blocClass, id)
       : this.findRegisteredBlocInstance(blocClass, id);

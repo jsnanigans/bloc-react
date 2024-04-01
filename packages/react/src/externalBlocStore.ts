@@ -20,7 +20,7 @@ const externalBlocStore = <
 
   return {
     subscribe: (listener: () => void) => {
-      const unSub = bloc.addEventListenerStateChange((data) => {
+      const unSub = bloc.addSubscriber((data) => {
         try {
           const newDependencyCheck = dependencyArray(data) ?? [];
 

@@ -1,11 +1,14 @@
 import type { FC } from 'react';
 import React, { useCallback } from 'react';
-import { Cubit } from 'blac';
+import { Bloc, Cubit } from 'blac';
 import { useBloc } from '@blac/react';
 
 class TodoListBloc extends Cubit<string[]> {
+  userBloc = this.blac.getBloc(UserBloc);
+
   constructor() {
     super(['Learn about BLoC pattern', 'Learn about Cubit pattern']);
+    this.userBloc = this.blac.getBloc(UserBloc);
   }
 
   addTodo = (text: string) => {
@@ -13,36 +16,37 @@ class TodoListBloc extends Cubit<string[]> {
   };
 
   get todosWithName() {
-    const name = this.blac.getBloc(UserBloc).state;
-    return this.state.map((todo) => `${name} - ${todo}`);
+    return this.state.map((todo) => `${this.userBloc.state} - ${todo}`);
   }
 }
 
-class UserBloc extends Cubit<string> {
+class UserActionChangeName {
+  constructor(public payload: string) {}
+}
+
+type UserActions = UserActionChangeName;
+
+class UserBloc extends Bloc<string, UserActions> {
   constructor() {
     super('John Doe');
   }
 
+  reducer(action: UserActions, state: string) {
+    switch (action.constructor) {
+      case UserActionChangeName:
+        return (action as UserActionChangeName).payload;
+    }
+    return state;
+  }
+
   setName = (name: string) => {
-    this.emit(name);
+    this.add(new UserActionChangeName(name));
   };
 }
 
-const NameForm: FC = () => {
-  const [name, { setName }] = useBloc(UserBloc);
-
-  return (
-    <input
-      type="text"
-      name="name"
-      value={name}
-      onChange={(e) => setName(e.target.value)}
-    />
-  );
-};
-
 const CrossDependency: FC = () => {
   const [, { addTodo, todosWithName }] = useBloc(TodoListBloc);
+  const [name, { setName }] = useBloc(UserBloc);
 
   const handleAddTodo = useCallback(
     (event) => {
@@ -72,7 +76,13 @@ const CrossDependency: FC = () => {
       </form>
 
       <hr />
-      <NameForm />
+
+      <input
+        type="text"
+        name="name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+      />
     </>
   );
 };

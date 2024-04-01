@@ -80,13 +80,13 @@ describe('BlocBase', () => {
     });
   });
 
-  describe('addEventListenerStateChange', () => {
+  describe('addSubscriber', () => {
     it('should report `listener_added` when a listener is added', () => {
       const instance = new BlocBaseSimple(0);
       const blac = instance.blac;
       const blacSpy = vi.spyOn(blac, 'report');
 
-      instance.addEventListenerStateChange(() => {});
+      instance.addSubscriber(() => {});
       expect(blacSpy).toHaveBeenNthCalledWith(
         1,
         BlacEvent.LISTENER_ADDED,
@@ -100,7 +100,7 @@ describe('BlocBase', () => {
       const observerSpy = vi.spyOn(observer, 'subscribe');
       expect(observerSpy).not.toHaveBeenCalled();
       const callback = () => {};
-      instance.addEventListenerStateChange(callback);
+      instance.addSubscriber(callback);
       expect(observerSpy).toHaveBeenCalledWith(callback);
     });
 
@@ -110,7 +110,7 @@ describe('BlocBase', () => {
       const observerSpy = vi.spyOn(observer, 'unsubscribe');
       expect(observerSpy).not.toHaveBeenCalled();
       const callback = () => {};
-      const unsubscribe = instance.addEventListenerStateChange(callback);
+      const unsubscribe = instance.addSubscriber(callback);
       expect(observerSpy).not.toHaveBeenCalled();
 
       unsubscribe();
@@ -124,7 +124,7 @@ describe('BlocBase', () => {
       const blac = instance.blac;
       const blacSpy = vi.spyOn(blac, 'report');
       const callback = () => {};
-      instance.addEventListenerStateChange(callback);
+      instance.addSubscriber(callback);
       expect(blacSpy).toHaveBeenCalledWith(BlacEvent.LISTENER_ADDED, instance);
     });
   });

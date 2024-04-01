@@ -1,5 +1,5 @@
 import { Blac, BlacEvent } from './Blac';
-import { BlacObservable } from './BlacObserver';
+import { BlacObservable, BlacObserver } from './BlacObserver';
 import { BlocProps } from './Cubit';
 import BlacAddon from './addons/BlacAddon';
 
@@ -65,7 +65,7 @@ export abstract class BlocBase<S, P extends BlocProps = {}> {
     this.id = id;
   };
 
-  addEventListenerStateChange = (
+  addSubscriber = (
     callback: (newState: S, oldState: S) => void,
   ): (() => void) => {
     this.blac.report(BlacEvent.LISTENER_ADDED, this);
@@ -80,9 +80,7 @@ export abstract class BlocBase<S, P extends BlocProps = {}> {
     // this.onDisconnect?.();
   }
 
-  private handleUnsubscribe = (
-    callback: (newState: S, oldState: S) => void,
-  ): void => {
+  handleUnsubscribe = (callback: BlacObserver<S>): void => {
     this.observer.unsubscribe(callback);
     this.blac.report(BlacEvent.LISTENER_REMOVED, this);
   };
@@ -108,9 +106,9 @@ export abstract class BlocBase<S, P extends BlocProps = {}> {
     }
   };
 
-  pushState = (newState: S, oldState: S): void => {
+  pushState = (newState: S, oldState: S, action?: any): void => {
     this._state = newState;
-    this.observer.notify(newState, oldState);
+    this.observer.notify(newState, oldState, action);
 
     this.blac.report(BlacEvent.STATE_CHANGED, this, {
       newState,

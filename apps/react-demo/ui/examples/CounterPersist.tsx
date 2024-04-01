@@ -26,9 +26,9 @@ class CounterPersistBloc extends Bloc<number, CounterPersistActions> {
 
   reducer(action: CounterPersistActions, state: number) {
     switch (action) {
-      case 'increment':
+      case CounterPersistActions.increment:
         return state + 1;
-      case 'decrement':
+      case CounterPersistActions.decrement:
         return state - 1;
     }
     return state;

@@ -26,7 +26,6 @@ export function Persist(
   } = options;
 
   const getFromLocalStorage = (id: string | BlocInstanceId): unknown => {
-    console.log(localStoragePrefix, id);
     const value = localStorage.getItem(`${localStoragePrefix}:${id}`);
     if (!value) {
       return defaultValue;
