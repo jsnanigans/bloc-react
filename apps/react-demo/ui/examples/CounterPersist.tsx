@@ -2,6 +2,7 @@ import { Bloc, Cubit, Persist } from 'blac';
 import React, { FC } from 'react';
 import { useBloc } from '@blac/react';
 
+// Cubit with persist addon
 class CounterPersistCubit extends Cubit<number> {
   static addons = [
     Persist({
@@ -9,18 +10,19 @@ class CounterPersistCubit extends Cubit<number> {
     }),
   ];
 
-  update = (amount: number) => () => this.emit(this.state + amount);
+  update = (amount: number) => this.emit(this.state + amount);
 }
 
+// Bloc with persist addon
 enum CounterPersistActions {
   increment = 'increment',
   decrement = 'decrement',
 }
-
 class CounterPersistBloc extends Bloc<number, CounterPersistActions> {
   static addons = [
     Persist({
       defaultValue: 0,
+      storageType: 'sessionStorage',
     }),
   ];
 
@@ -30,21 +32,25 @@ class CounterPersistBloc extends Bloc<number, CounterPersistActions> {
         return state + 1;
       case CounterPersistActions.decrement:
         return state - 1;
+      default:
+        return state;
     }
-    return state;
   }
 }
 
+// Component
 const CounterWithCubitPersist: FC = () => {
-  const [count, cubit] = useBloc(CounterPersistCubit);
+  const [count, { update }] = useBloc(CounterPersistCubit);
   const [count2, bloc] = useBloc(CounterPersistBloc);
 
   return (
     <>
-      <button onClick={cubit.update(-1)}>-</button>
+      <h4>LocalStorage</h4>
+      <button onClick={() => update(-1)}>-</button>
       {` ${count} `}
-      <button onClick={cubit.update(1)}>+</button>
+      <button onClick={() => update(1)}>+</button>
       <hr />
+      <h4>SessionStorage</h4>
       <button onClick={() => bloc.add(CounterPersistActions.decrement)}>
         -
       </button>

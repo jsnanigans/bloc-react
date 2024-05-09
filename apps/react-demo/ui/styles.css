@@ -133,6 +133,7 @@ hr {
 pre code {
   text-shadow: none;
   border: 8px solid #000;
+  font-size: 12px;
 }
 
 main {

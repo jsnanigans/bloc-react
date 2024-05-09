@@ -88,15 +88,8 @@ const NoSharedState: FC = () => {
     const blocks = Blac.getAllBlocs(IsolatedBloc);
     animate(blocks);
 
-    const changeColor = setInterval(() => {
-      if (active.current) {
-        setColor((c) => (c === 'red' ? 'blue' : 'red'));
-      }
-    }, 1000);
-
     return () => {
       active.current = false;
-      clearInterval(changeColor);
     };
   }, []);
 

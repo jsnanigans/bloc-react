@@ -1,48 +1,76 @@
-import { Bloc } from '../Bloc';
-import { BlocInstanceId } from '../BlocBase';
-import { Cubit } from '../Cubit';
+import { BlocBase, BlocInstanceId } from '../BlocBase';
 import BlacAddon, { BlacAddonEmit, BlacAddonInit } from './BlacAddon';
 
+type StorageType = 'localStorage' | 'sessionStorage';
+
+function getStorage(type: StorageType): Storage {
+  switch (type) {
+    case 'localStorage':
+      return localStorage;
+    case 'sessionStorage':
+      return sessionStorage;
+    default:
+      return localStorage;
+  }
+}
+
+/**
+ * Persist addon
+ *
+ * @param options
+ * @returns BlacAddon
+ */
 export function Persist(
   options: {
     /**
      * @default 'blac'
      */
-    localStoragePrefix?: string;
+    keyPrefix?: string;
     /**
      * @default the bloc's id
      */
-    localStorageKey?: string;
+    keyName?: string;
     /**
-     * Used when the value is not found in localStorage
+     * Used when the value is not found in storage
      */
     defaultValue?: unknown;
+
+    /**
+     * @default 'localStorage'
+     * @see StorageType
+     */
+    storageType?: StorageType;
   } = {},
 ): BlacAddon {
   const {
-    localStoragePrefix = 'blac',
-    localStorageKey,
+    keyPrefix = 'blac',
+    keyName,
     defaultValue,
+    storageType = 'localStorage',
   } = options;
 
+  const fullKey = (id: string | BlocInstanceId) => `${keyPrefix}:${id}`;
+
   const getFromLocalStorage = (id: string | BlocInstanceId): unknown => {
-    const value = localStorage.getItem(`${localStoragePrefix}:${id}`);
-    if (!value) {
+    const value = getStorage(storageType).getItem(fullKey(id));
+    if (typeof value !== 'string') {
       return defaultValue;
     }
 
     try {
-      const p = JSON.parse(JSON.parse(value));
-      return p.persist;
+      const p = JSON.parse(value);
+      if (typeof p.v !== 'undefined') {
+        return p.v;
+      } else {
+        return defaultValue;
+      }
     } catch (e) {
-      return value;
+      return defaultValue;
     }
   };
 
-  const onInit: BlacAddonInit = (
-    e: Bloc<unknown, unknown> | Cubit<unknown>,
-  ) => {
-    const id = localStorageKey ?? e.id;
+  const onInit: BlacAddonInit = (e: BlocBase<any>) => {
+    const id = keyName ?? e.id;
 
     const value = getFromLocalStorage(id);
     if (typeof value !== undefined) {
@@ -52,12 +80,12 @@ export function Persist(
 
   let currentCachedValue = '';
   const onEmit: BlacAddonEmit = ({ newState, cubit }) => {
-    const id = localStorageKey ?? cubit.id;
+    const id = keyName ?? cubit.id;
 
-    const newValue = JSON.stringify(`{"persist": ${newState}}`);
+    const newValue = JSON.stringify({ v: newState });
 
     if (newValue !== currentCachedValue) {
-      localStorage.setItem(`${localStoragePrefix}:${id}`, newValue);
+      getStorage(storageType).setItem(fullKey(id), newValue);
       currentCachedValue = newValue;
     }
   };

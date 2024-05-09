@@ -4,24 +4,19 @@ import { Bloc, Cubit } from 'blac';
 import { useBloc } from '@blac/react';
 
 class TodoListBloc extends Cubit<string[]> {
-  userBloc = this.blac.getBloc(UserBloc);
-
   constructor() {
-    super(['Learn about BLoC pattern', 'Learn about Cubit pattern']);
-
-    this.userBloc = this.blac.getBloc(UserBloc);
-    // userBloc.addSubscriber((state) => {
-    //   this.userName = state;
-    // });
+    super([]);
+    const name = this.blac.getBloc(UserBloc).state;
+    this.emit([
+      `${name}: Learn about BLoC pattern`,
+      `${name}: Learn about Cubit pattern`,
+    ]);
   }
 
   addTodo = (text: string) => {
-    this.emit([...this.state, text]);
+    const name = this.blac.getBloc(UserBloc).state;
+    this.emit([...this.state, `${name}: ${text}`]);
   };
-
-  get todosWithName() {
-    return this.state.map((todo) => `${this.userBloc.state} - ${todo}`);
-  }
 }
 
 class UserActionChangeName {
@@ -49,24 +44,21 @@ class UserBloc extends Bloc<string, UserActions> {
 }
 
 const CrossDependency: FC = () => {
-  const [, { addTodo, todosWithName }] = useBloc(TodoListBloc);
+  const [todos, { addTodo }] = useBloc(TodoListBloc);
   const [name, { setName }] = useBloc(UserBloc);
 
-  const handleAddTodo = useCallback(
-    (event) => {
-      event.preventDefault();
-      const text = event.target.text.value;
-      if (!text) return;
-      addTodo(text);
-    },
-    [addTodo],
-  );
+  const handleAddTodo = (event) => {
+    event.preventDefault();
+    const text = event.target.text.value;
+    if (!text) return;
+    addTodo(text);
+  };
 
   return (
     <>
       <table>
         <tbody>
-          {todosWithName.map((todo, index) => (
+          {todos.map((todo, index) => (
             <tr key={index}>
               <td>{todo}</td>
             </tr>

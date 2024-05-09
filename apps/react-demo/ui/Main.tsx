@@ -89,7 +89,11 @@ class DemoPageBloc extends Cubit<MainBlocState> {
           persists the state to localStorage
         </p>
       ),
-      component: <CounterPersist />,
+      component: (
+        <div>
+          <CounterPersist />
+        </div>
+      ),
       code: CounterPersistAsText,
     },
     {

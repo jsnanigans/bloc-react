@@ -1,13 +1,15 @@
-import { Bloc } from '../Bloc';
-import { Cubit } from '../Cubit';
+import { BlocBase } from '../BlocBase';
 
 export type BlacAddonInit = (
-  bloc: Cubit<unknown> | Bloc<unknown, unknown>,
+  bloc: BlocBase<any>,
+  // bloc: Cubit<unknown> | Bloc<unknown, unknown>,
 ) => void;
+
 export type BlacAddonEmit = (params: {
   oldState: unknown;
   newState: unknown;
-  cubit: Cubit<unknown> | Bloc<unknown, unknown>;
+  // cubit: Cubit<unknown> | Bloc<unknown, unknown>;
+  cubit: BlocBase<any>;
 }) => void;
 
 type BlacAddon = {
