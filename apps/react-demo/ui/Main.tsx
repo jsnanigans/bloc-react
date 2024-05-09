@@ -37,6 +37,9 @@ import QueryOtherBlocsText from './examples/QueryOtherBlocs.tsx?raw';
 import CrossDependency from './examples/CrossDependency';
 import CrossDependencyText from './examples/CrossDependency.tsx?raw';
 
+import BroadcastSignals from './examples/BroadcastSignals';
+import BroadcastSignalsText from './examples/BroadcastSignals.tsx?raw';
+
 interface DemoData {
   name: string;
   description?: React.ReactNode;
@@ -144,6 +147,26 @@ class DemoPageBloc extends Cubit<MainBlocState> {
       code: CrossDependencyText,
     },
     {
+      name: 'Signals',
+      description: (
+        <>
+          <p>
+            Signals are a way to broadcast messages to all Blocs, this is useful
+            when you want to notify all Blocs at once, for example when a user
+            logs out, you can broadcast a signal "clearData" and all Blocs can
+            react to it by clearing their state from user data.
+          </p>
+          <p>
+            or if you want to trigger an event on a specific bloc but you dont
+            want or cannot reference the class directly. this is useful if you
+            dont want to import the class in the file.
+          </p>
+        </>
+      ),
+      component: <BroadcastSignals />,
+      code: BroadcastSignalsText,
+    },
+    {
       name: 'Counter Multiple Instances',
       description: (
         <>
@@ -151,7 +174,7 @@ class DemoPageBloc extends Cubit<MainBlocState> {
             By default there is always only one instance of each Bloc, if you
             need multiple instanced then specify the "ID" in the `useBloc` hook.
             All consumers that have the same ID will share the same instance of
-            the Bloc
+            the Bloc.
           </p>
         </>
       ),

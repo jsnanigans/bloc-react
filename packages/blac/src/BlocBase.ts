@@ -117,4 +117,6 @@ export abstract class BlocBase<S, P extends BlocProps = {}> {
       oldState,
     });
   };
+
+  abstract onSignal(signal: string, payload: any): void {}
 }

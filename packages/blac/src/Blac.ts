@@ -1,10 +1,5 @@
 import { BlocBase, BlocInstanceId } from './BlocBase';
-import {
-  BlocBaseAbstract,
-  BlocConstructor,
-  BlocGeneric,
-  InferStateFromGeneric,
-} from './types';
+import { BlocBaseAbstract, BlocConstructor, BlocGeneric } from './types';
 import { BlocProps } from './Cubit';
 import { BlacPlugin } from './BlacPlugin';
 
@@ -52,8 +47,20 @@ export class Blac {
     Blac.instance = this;
   }
 
+  broadcastSignal = (signal: string, payload?: any) => {
+    this.log('Broadcast signal', signal, payload);
+
+    const allBlocs = Array.from(this.blocInstanceMap.values());
+    console.log('allBlocs', allBlocs);
+    allBlocs.forEach((bloc) => {
+      bloc.onSignal?.(signal, payload);
+    });
+  };
+  static broadcastSignal = Blac.instance.broadcastSignal;
+
+  static enableLog = true;
   log = (...args: any[]) => {
-    console.log(`☢️ [Blac ${this.createdAt}]`, ...args);
+    if (Blac.enableLog) console.log(`☢️ [Blac ${this.createdAt}]`, ...args);
   };
 
   static getInstance(): Blac {
@@ -266,10 +273,4 @@ export class Blac {
       // window.__blac = this;
     }
   };
-}
-
-declare global {
-  interface Window {
-    // __blac?: Blac;
-  }
 }
