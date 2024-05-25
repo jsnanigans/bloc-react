@@ -2,17 +2,23 @@ import { useBloc } from '@blac/react';
 import { Cubit } from 'blac';
 import React, { FC } from 'react';
 
-class PropsBloc extends Cubit<{ display: string }> {
+type PropsBlocProps = { name: string };
+
+class PropsBloc extends Cubit<{ display: string }, PropsBlocProps> {
   // props are passed to the constructor, if the bloc is not isolated the state is shared and so the constructor is called only once for the first
   static isolated = true;
-  constructor(props: { userName: string }) {
-    super({ display: props.userName });
+  constructor(props: PropsBlocProps) {
+    super({ display: props.name });
   }
 }
 
 const Props: FC<{ name: string }> = ({ name }) => {
   // pass the props to the bloc
-  const [{ display }] = useBloc(PropsBloc, { props: { userName: 2 } });
+  const [{ display }] = useBloc(PropsBloc, {
+    props: {
+      name,
+    },
+  });
 
   return <div>Name: {display}</div>;
 };

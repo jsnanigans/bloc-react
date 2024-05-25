@@ -12,9 +12,12 @@ export type ValueType<B extends BlocBase<any>> =
 // export type CubitPropsType<B extends BlocBase<any>> =
 //   B extends Cubit<any, infer P> ? P : never;
 
-export type BlocGeneric<S, A> = Bloc<S, A> | Cubit<S>;
+export type BlocGeneric<S, A, P> = Bloc<S, A> | Cubit<S, P>;
 export type InferStateFromGeneric<T> =
-  T extends Bloc<infer S, any> ? S : T extends Cubit<infer S> ? S : never;
+  T extends Bloc<infer S, any> ? S : T extends Cubit<infer S, any> ? S : never;
 
-export type BlocConstructorParameters<B extends BlocBase<any>> =
+export type InferPropsFromGeneric<T> =
+  T extends Bloc<any, infer P> ? P : T extends Cubit<any, infer P> ? P : never;
+
+export type BlocConstructorParameters<B extends BlocBase<any, any>> =
   BlocConstructor<B> extends new (...args: infer P) => any ? P : never;

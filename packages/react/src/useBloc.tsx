@@ -1,10 +1,13 @@
 import {
   Blac,
+  Bloc,
   BlocBase,
   BlocConstructor,
   BlocConstructorParameters,
   BlocGeneric,
   BlocInstanceId,
+  Cubit,
+  InferPropsFromGeneric,
   InferStateFromGeneric,
 } from 'blac';
 import { useEffect, useId, useMemo, useSyncExternalStore } from 'react';
@@ -31,14 +34,15 @@ export type BlocHookDependencyArrayFn<B extends BlocGeneric<any, any>> = (
 export interface BlocHookOptions<B extends BlocGeneric<any, any>> {
   id?: string;
   dependencySelector?: BlocHookDependencyArrayFn<B>;
-  props?: BlocConstructorParameters<B>;
+  props?: InferPropsFromGeneric<B>;
 }
 
 export class UseBlocClass {
   static useBloc<
-    B extends BlocConstructor<BlocGeneric<S, A>>,
+    B extends typeof Cubit<S, P> | typeof Bloc<S, A>,
     S = any,
     A = any,
+    P = any,
   >(bloc: B, options?: BlocHookOptions<InstanceType<B>>): HookTypes<B> {
     const rid = useId();
     const usedKeys: string[] = [];

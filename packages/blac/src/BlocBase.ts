@@ -5,10 +5,10 @@ import BlacAddon from './addons/BlacAddon';
 
 export type BlocInstanceId = string | number | undefined;
 
-export abstract class BlocBase<S> {
+export abstract class BlocBase<S, P> {
   static isolated = false;
   static keepAlive = false;
-  static create: <S extends any>() => BlocBase<S>;
+  static create: <S extends any, P>() => BlocBase<S, P>;
   static isBlacClass = true;
   static addons?: BlacAddon[];
   public addons?: BlacAddon[];
@@ -30,6 +30,7 @@ export abstract class BlocBase<S> {
   }
 
   public _state: S;
+  public _props: P = undefined as P;
 
   get state(): S {
     return this._state;

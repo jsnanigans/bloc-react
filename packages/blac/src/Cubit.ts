@@ -1,11 +1,12 @@
 import { BlacLifecycleEvent } from './Blac';
 import { BlocBase } from './BlocBase';
 
-export abstract class Cubit<S> extends BlocBase<S> {
-  static create: () => Cubit<any>;
+export abstract class Cubit<S, P> extends BlocBase<S, P> {
+  static create: () => Cubit<any, any>;
 
-  // constructor(state: S, props?: unknown) {
-  //   super(state);
+  // constructor(props?: P) {
+  //   super(undefined);
+  //   this._props = props;
   // }
 
   /**
