@@ -2,26 +2,17 @@ import { useBloc } from '@blac/react';
 import { Cubit } from 'blac';
 import React, { FC } from 'react';
 
-class PropsBloc extends Cubit<{ display: string }, { name: string }> {
-  // when using props, you need to set isolated to true
-  // or make sure to give each instance a unique id.
-  // if multiple consumers (components) share the same bloc instance,
-  // and pass different props only the first one will be used.
+class PropsBloc extends Cubit<{ display: string }> {
+  // props are passed to the constructor, if the bloc is not isolated the state is shared and so the constructor is called only once for the first
   static isolated = true;
-  constructor() {
-    super({ display: '' });
-    this.updateDisplay();
+  constructor(props: { userName: string }) {
+    super({ display: props.userName });
   }
-
-  updateDisplay = () => {
-    const { name } = this.props ?? {};
-    this.emit({ display: name ?? 'nothing' });
-  };
 }
 
 const Props: FC<{ name: string }> = ({ name }) => {
   // pass the props to the bloc
-  const [{ display }] = useBloc(PropsBloc, { props: { name } });
+  const [{ display }] = useBloc(PropsBloc, { props: { userName: 2 } });
 
   return <div>Name: {display}</div>;
 };

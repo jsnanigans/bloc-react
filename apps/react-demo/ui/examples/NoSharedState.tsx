@@ -3,17 +3,21 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import { Blac, Cubit } from 'blac';
 import { useBloc } from '@blac/react';
 
-class IsolatedBloc extends Cubit<
-  { x: number; y: number; c: string },
-  { speedX: number; speedY: number; startX: number; color: string }
-> {
+class IsolatedBloc extends Cubit<{ x: number; y: number; c: string }> {
   static isolated = true;
   velocity = { x: 0, y: 0 };
   maxX = 600;
   maxY = 400;
+  props: { speedX: number; speedY: number; startX: number; color: string } = {
+    speedX: 0,
+    speedY: 0,
+    startX: 0,
+    color: 'orange',
+  };
 
-  constructor() {
+  constructor(props: typeof this.props) {
     super({ x: 150, y: 100, c: 'orange' });
+    this.props = props;
     this.startJumping();
     this.patch({ x: this.props?.startX ?? 0 });
   }

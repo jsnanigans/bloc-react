@@ -1,11 +1,11 @@
+import { BlacLifecycleEvent } from './Blac';
 import { BlocBase } from './BlocBase';
-import { BlacEvent } from './Blac';
 
 export abstract class Bloc<S, A> extends BlocBase<S> {
   static create: () => BlocBase<any>;
 
-  constructor(initialState: S) {
-    super(initialState);
+  constructor(state: S, props?: unknown) {
+    super(state);
   }
 
   /**
@@ -29,7 +29,7 @@ export abstract class Bloc<S, A> extends BlocBase<S> {
   addSubscriber = (
     callback: (newState: S, oldState: S, action: A) => void,
   ): (() => void) => {
-    this.blac.report(BlacEvent.LISTENER_ADDED, this);
+    this.blac.report(BlacLifecycleEvent.LISTENER_ADDED, this);
     this.observer.subscribe(callback);
     return () => this.handleUnsubscribe(callback);
   };

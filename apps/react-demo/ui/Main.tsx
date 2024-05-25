@@ -37,8 +37,8 @@ import QueryOtherBlocsText from './examples/QueryOtherBlocs.tsx?raw';
 import CrossDependency from './examples/CrossDependency';
 import CrossDependencyText from './examples/CrossDependency.tsx?raw';
 
-import BroadcastSignals from './examples/BroadcastSignals';
-import BroadcastSignalsText from './examples/BroadcastSignals.tsx?raw';
+import BroadcastEvents from './examples/BroadcastEvents';
+import BroadcastEventsText from './examples/BroadcastEvents?raw';
 
 interface DemoData {
   name: string;
@@ -163,8 +163,8 @@ class DemoPageBloc extends Cubit<MainBlocState> {
           </p>
         </>
       ),
-      component: <BroadcastSignals />,
-      code: BroadcastSignalsText,
+      component: <BroadcastEvents />,
+      code: BroadcastEventsText,
     },
     {
       name: 'Counter Multiple Instances',

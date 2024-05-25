@@ -2,12 +2,10 @@ import {
   Blac,
   BlocBase,
   BlocConstructor,
+  BlocConstructorParameters,
   BlocGeneric,
   BlocInstanceId,
-  BlocProps,
-  CubitPropsType,
   InferStateFromGeneric,
-  ValueType,
 } from 'blac';
 import { useEffect, useId, useMemo, useSyncExternalStore } from 'react';
 import externalBlocStore from './externalBlocStore';
@@ -33,54 +31,35 @@ export type BlocHookDependencyArrayFn<B extends BlocGeneric<any, any>> = (
 export interface BlocHookOptions<B extends BlocGeneric<any, any>> {
   id?: string;
   dependencySelector?: BlocHookDependencyArrayFn<B>;
-  props?: CubitPropsType<B>;
+  props?: BlocConstructorParameters<B>;
 }
 
 export class UseBlocClass {
-  // static useBloc<B extends BlocConstructor<BlocBase<S>>, S>(
-  //   bloc: B,
-  // ): BlocHookData<InstanceType<B>, S> {
-  // static useBloc<B extends BlocConstructor<BlocBase<S>>, S>(
-  //   bloc: B,
-  //   depsSelector: BlocHookDependencyArrayFn<InstanceType<B>, S>,
-  // ): BlocHookData<InstanceType<B>, S>;
-  // static useBloc<B extends BlocConstructor<BlocBase<S>>, S>(
-  //   bloc: B,
-  //   instanceId: string,
-  // ): BlocHookData<InstanceType<B>, S>;
-  // static useBloc<B extends BlocConstructor<BlocBase<S>>, S>(
-  //   bloc: B,
-  //   options?:
-  //     | BlocHookOptions<InstanceType<B>, S>
-  //     | BlocHookDependencyArrayFn<InstanceType<B>, S>
-  //     | BlocInstanceId,
-  // ): BlocHookData<InstanceType<B>, S> {
-
-  // constructor, no options
   static useBloc<
     B extends BlocConstructor<BlocGeneric<S, A>>,
     S = any,
     A = any,
   >(bloc: B, options?: BlocHookOptions<InstanceType<B>>): HookTypes<B> {
     const rid = useId();
+    const usedKeys: string[] = [];
     // default options
     let dependencyArray: BlocHookDependencyArrayFn<InstanceType<B>> = (
       state: InferStateFromGeneric<B>,
-    ) => [state];
+    ) => {
+      if (typeof state !== 'object') {
+        return [state];
+      }
+
+      const used: unknown[] = [];
+      for (const key in state) {
+        if (usedKeys.includes(key)) {
+          used.push(state[key]);
+        }
+      }
+      return used;
+    };
     let blocId: BlocInstanceId | undefined;
-    let props: BlocProps | undefined;
-
-    // parse options
-
-    // if options is a function, its a dependencySelector
-    // if (typeof options === 'function') {
-    //   dependencyArray = options;
-    // }
-    //
-    // if options is a string its an ID
-    // if (typeof options === 'string') {
-    //   blocId = options;
-    // }
+    let props: ConstructorParameters<BlocConstructor<B>> | undefined;
 
     if (typeof options === 'object') {
       dependencyArray = options.dependencySelector ?? dependencyArray;
@@ -121,7 +100,17 @@ export class UseBlocClass {
       }
     }, [props]);
 
-    return [state, resolvedBloc];
+    let returnState = state;
+    if (typeof state === 'object') {
+      returnState = new Proxy(state, {
+        get(target, prop) {
+          usedKeys.push(prop as string);
+          return Reflect.get(target, prop);
+        },
+      });
+    }
+
+    return [returnState, resolvedBloc];
   }
 }
 

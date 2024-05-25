@@ -1,16 +1,15 @@
-import { Blac, BlacEvent } from './Blac';
+import { Blac, BlacLifecycleEvent } from './Blac';
+import BlacEvent from './BlacEvent';
 import { BlacObservable, BlacObserver } from './BlacObserver';
-import { BlocProps } from './Cubit';
 import BlacAddon from './addons/BlacAddon';
 
 export type BlocInstanceId = string | number | undefined;
 
-export abstract class BlocBase<S, P extends BlocProps = {}> {
+export abstract class BlocBase<S> {
   static isolated = false;
   static keepAlive = false;
   static create: <S extends any>() => BlocBase<S>;
   static isBlacClass = true;
-  static _propsOnInit: BlocProps | undefined;
   static addons?: BlacAddon[];
   public addons?: BlacAddon[];
   public isolated = false;
@@ -23,30 +22,11 @@ export abstract class BlocBase<S, P extends BlocProps = {}> {
   constructor(initialState: S) {
     this.observer = new BlacObservable();
     this._state = initialState;
-    this.blac.report(BlacEvent.BLOC_CREATED, this);
+    this.blac.report(BlacLifecycleEvent.BLOC_CREATED, this);
     this.id = this.constructor.name;
     this.isolated = (this.constructor as any).isolated;
     this.addons = (this.constructor as any).addons;
     this.connectAddons();
-  }
-
-  private localProps?: P;
-  get props(): typeof this.localProps {
-    if (this.localProps) {
-      return this.localProps;
-    }
-
-    const constructorProps = (this.constructor as any)._propsOnInit;
-    if (constructorProps) {
-      this.localProps = constructorProps;
-      return constructorProps;
-    }
-
-    return undefined;
-  }
-
-  set props(props: P) {
-    this.localProps = props;
   }
 
   public _state: S;
@@ -68,13 +48,13 @@ export abstract class BlocBase<S, P extends BlocProps = {}> {
   addSubscriber = (
     callback: (newState: S, oldState: S) => void,
   ): (() => void) => {
-    this.blac.report(BlacEvent.LISTENER_ADDED, this);
+    this.blac.report(BlacLifecycleEvent.LISTENER_ADDED, this);
     this.observer.subscribe(callback);
     return () => this.handleUnsubscribe(callback);
   };
 
   dispose() {
-    this.blac.report(BlacEvent.BLOC_DISPOSED, this);
+    this.blac.report(BlacLifecycleEvent.BLOC_DISPOSED, this);
     this.isBlacLive = false;
     this.observer.dispose();
     // this.onDisconnect?.();
@@ -83,7 +63,7 @@ export abstract class BlocBase<S, P extends BlocProps = {}> {
   handleUnsubscribe = (callback: BlacObserver<S>): void => {
     setTimeout(() => {
       this.observer.unsubscribe(callback);
-      this.blac.report(BlacEvent.LISTENER_REMOVED, this);
+      this.blac.report(BlacLifecycleEvent.LISTENER_REMOVED, this);
     }, 0);
   };
 
@@ -112,11 +92,11 @@ export abstract class BlocBase<S, P extends BlocProps = {}> {
     this._state = newState;
     this.observer.notify(newState, oldState, action);
 
-    this.blac.report(BlacEvent.STATE_CHANGED, this, {
+    this.blac.report(BlacLifecycleEvent.STATE_CHANGED, this, {
       newState,
       oldState,
     });
   };
 
-  abstract onSignal(signal: string, payload: any): void {}
+  onEvent(event: BlacEvent): void {}
 }

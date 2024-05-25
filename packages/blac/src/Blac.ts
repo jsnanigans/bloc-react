@@ -1,13 +1,13 @@
 import { BlocBase, BlocInstanceId } from './BlocBase';
 import { BlocBaseAbstract, BlocConstructor, BlocGeneric } from './types';
-import { BlocProps } from './Cubit';
 import { BlacPlugin } from './BlacPlugin';
+import BlacEvent from './BlacEvent';
 
 export interface BlacConfig {
   exposeBlacInstance?: boolean;
 }
 
-export enum BlacEvent {
+export enum BlacLifecycleEvent {
   BLOC_DISPOSED = 'BLOC_DISPOSED',
   LISTENER_REMOVED = 'LISTENER_REMOVED',
   LISTENER_ADDED = 'LISTENER_ADDED',
@@ -16,11 +16,11 @@ export enum BlacEvent {
 }
 
 export interface EventParams {
-  [BlacEvent.BLOC_DISPOSED]: undefined;
-  [BlacEvent.LISTENER_REMOVED]: undefined;
-  [BlacEvent.LISTENER_ADDED]: undefined;
-  [BlacEvent.BLOC_CREATED]: undefined;
-  [BlacEvent.STATE_CHANGED]: {
+  [BlacLifecycleEvent.BLOC_DISPOSED]: undefined;
+  [BlacLifecycleEvent.LISTENER_REMOVED]: undefined;
+  [BlacLifecycleEvent.LISTENER_ADDED]: undefined;
+  [BlacLifecycleEvent.BLOC_CREATED]: undefined;
+  [BlacLifecycleEvent.STATE_CHANGED]: {
     newState: any;
     oldState: any;
   };
@@ -47,18 +47,18 @@ export class Blac {
     Blac.instance = this;
   }
 
-  broadcastSignal = (signal: string, payload?: any) => {
-    this.log('Broadcast signal', signal, payload);
+  dispatchEvent = <T>(event: BlacEvent<T>) => {
+    this.log('Broadcast signal', event);
 
     const allBlocs = Array.from(this.blocInstanceMap.values());
-    console.log('allBlocs', allBlocs);
     allBlocs.forEach((bloc) => {
-      bloc.onSignal?.(signal, payload);
+      bloc.onEvent?.(event);
     });
   };
-  static broadcastSignal = Blac.instance.broadcastSignal;
 
-  static enableLog = true;
+  static dispatchEvent = Blac.instance.dispatchEvent;
+
+  static enableLog = false;
   log = (...args: any[]) => {
     if (Blac.enableLog) console.log(`☢️ [Blac ${this.createdAt}]`, ...args);
   };
@@ -82,7 +82,7 @@ export class Blac {
     this.pluginList.push(plugin);
   };
 
-  reportToPlugins = <B extends BlacEvent>(
+  reportToPlugins = <B extends BlacLifecycleEvent>(
     event: B,
     bloc: BlocBase<any>,
     params?: EventParams[B],
@@ -92,7 +92,7 @@ export class Blac {
     });
   };
 
-  report = <B extends BlacEvent>(
+  report = <B extends BlacLifecycleEvent>(
     event: B,
     bloc: BlocBase<any>,
     params?: EventParams[B],
@@ -100,10 +100,10 @@ export class Blac {
     const base = bloc.constructor as unknown as BlocBaseAbstract;
 
     switch (event) {
-      case BlacEvent.BLOC_DISPOSED:
+      case BlacLifecycleEvent.BLOC_DISPOSED:
         this.disposeBloc(bloc);
         break;
-      case BlacEvent.LISTENER_REMOVED:
+      case BlacLifecycleEvent.LISTENER_REMOVED:
         if (bloc.observer.size === 0 && !base.keepAlive) this.disposeBloc(bloc);
         break;
     }
@@ -192,7 +192,7 @@ export class Blac {
   createNewBlocInstance<B extends BlocBase<any>>(
     blocClass: BlocConstructor<B>,
     id: BlocInstanceId,
-    props: BlocProps | undefined,
+    props: ConstructorParameters<BlocConstructor<B>> | undefined,
   ): InstanceType<BlocConstructor<B>> {
     const base = blocClass as unknown as BlocBaseAbstract;
     const hasCreateMethod = Object.prototype.hasOwnProperty.call(
@@ -200,8 +200,9 @@ export class Blac {
       'create',
     );
 
-    base._propsOnInit = props;
-    const newBloc = hasCreateMethod ? base.create() : new blocClass();
+    const newBloc = hasCreateMethod
+      ? base.create()
+      : new blocClass(props as never);
     newBloc.updateId(id);
 
     this.log('Create new bloc instance', {
@@ -224,7 +225,7 @@ export class Blac {
     blocClass: B,
     options: {
       id?: BlocInstanceId;
-      props?: BlocProps;
+      props?: ConstructorParameters<BlocConstructor<B>>;
       reconnect?: boolean;
     } = {},
   ): InstanceType<B> {

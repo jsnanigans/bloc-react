@@ -2,8 +2,9 @@ import type { FC } from 'react';
 import React from 'react';
 import { Blac, Cubit } from 'blac';
 import { useBloc } from '@blac/react';
+import BlacEvent from 'blac/src/BlacEvent';
 
-class SignalListener extends Cubit<string[]> {
+class EventListenerBloc extends Cubit<string[]> {
   constructor() {
     super([]);
   }
@@ -16,11 +17,11 @@ class SignalListener extends Cubit<string[]> {
   }
 }
 
-const SignalDemo: FC = () => {
-  const [signals] = useBloc(SignalListener);
+const EventDemo: FC = () => {
+  const [signals] = useBloc(EventListenerBloc);
 
-  const sendSignal = (signal: string, payload: any) => {
-    Blac.broadcastSignal(signal, payload);
+  const sendSignal = (signalName: string, data) => {
+    Blac.dispatchEvent(new BlacEvent(signalName, { detail: data }));
   };
 
   return (
@@ -43,4 +44,4 @@ const SignalDemo: FC = () => {
   );
 };
 
-export default SignalDemo;
+export default EventDemo;
