@@ -1,6 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
 import { Bloc } from './Bloc';
-import { Blac } from './Blac';
 
 enum Action {
   INCREMENT,
@@ -18,18 +17,12 @@ class ExampleBloc extends Bloc<number, Action> {
 }
 
 describe('Bloc', () => {
-  it('blac should call create if its defined', () => {
-    const spy = vi.spyOn(ExampleBloc, 'create');
-    Blac.getInstance().getBloc(ExampleBloc);
-    expect(spy).toHaveBeenCalled();
-  });
-
   describe('reducer', () => {
     it('should be called with the action and the state', () => {
       const state = Math.random();
       const bloc = new ExampleBloc(state);
       const spy = vi.spyOn(bloc, 'reducer');
-      bloc.emit(Action.INCREMENT);
+      bloc.add(Action.INCREMENT);
       expect(spy).toHaveBeenCalledWith(Action.INCREMENT, state);
     });
 
@@ -39,7 +32,7 @@ describe('Bloc', () => {
       bloc.reducer = () => {
         return rnd;
       };
-      bloc.emit(Action.INCREMENT);
+      bloc.add(Action.INCREMENT);
       expect(bloc.state).toBe(rnd);
     });
   });

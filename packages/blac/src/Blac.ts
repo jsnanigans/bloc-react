@@ -1,5 +1,9 @@
 import { BlocBase, BlocInstanceId } from './BlocBase';
-import { BlocBaseAbstract, BlocConstructor, BlocGeneric } from './types';
+import {
+  BlocBaseAbstract,
+  BlocConstructor,
+  InferPropsFromGeneric,
+} from './types';
 import { BlacPlugin } from './BlacPlugin';
 import BlacEvent from './BlacEvent';
 
@@ -31,9 +35,8 @@ export class Blac {
   createdAt = Date.now();
   static getAllBlocs = Blac.instance.getAllBlocs;
   static addPlugin = Blac.instance.addPlugin;
-  static configure = Blac.instance.configure;
-  blocInstanceMap: Map<string, BlocBase<any>> = new Map();
-  isolatedBlocMap: Map<Function, BlocBase<any>[]> = new Map();
+  blocInstanceMap: Map<string, BlocBase<any, any>> = new Map();
+  isolatedBlocMap: Map<Function, BlocBase<any, any>[]> = new Map();
   pluginList: BlacPlugin[] = [];
   postChangesToDocument = false;
 
@@ -84,7 +87,7 @@ export class Blac {
 
   reportToPlugins = <B extends BlacLifecycleEvent>(
     event: B,
-    bloc: BlocBase<any>,
+    bloc: BlocBase<any, any>,
     params?: EventParams[B],
   ) => {
     this.pluginList.forEach((plugin) => {
@@ -94,7 +97,7 @@ export class Blac {
 
   report = <B extends BlacLifecycleEvent>(
     event: B,
-    bloc: BlocBase<any>,
+    bloc: BlocBase<any, any>,
     params?: EventParams[B],
   ) => {
     const base = bloc.constructor as unknown as BlocBaseAbstract;
@@ -111,7 +114,7 @@ export class Blac {
     this.reportToPlugins(event, bloc, params);
   };
 
-  disposeBloc = (bloc: BlocBase<any>): void => {
+  disposeBloc = (bloc: BlocBase<any, any>): void => {
     const base = bloc.constructor as unknown as BlocBaseAbstract;
     this.log('Dispose bloc', {
       bloc,
@@ -130,19 +133,19 @@ export class Blac {
     return `${blocClassName}:${id}`;
   }
 
-  unregisterBlocInstance(bloc: BlocBase<any>): void {
+  unregisterBlocInstance(bloc: BlocBase<any, any>): void {
     const key = this.createBlocInstanceMapKey(bloc.name, bloc.id);
     this.log('Unregister bloc', key);
     this.blocInstanceMap.delete(key);
   }
 
-  registerBlocInstance(bloc: BlocBase<any>): void {
+  registerBlocInstance(bloc: BlocBase<any, any>): void {
     const key = this.createBlocInstanceMapKey(bloc.name, bloc.id);
     this.log('Register bloc', key);
     this.blocInstanceMap.set(key, bloc);
   }
 
-  findRegisteredBlocInstance<B extends BlocBase<any>>(
+  findRegisteredBlocInstance<B extends BlocBase<any, any>>(
     blocClass: BlocConstructor<B>,
     id: BlocInstanceId,
   ): InstanceType<BlocConstructor<B>> | undefined {
@@ -153,7 +156,7 @@ export class Blac {
     return this.blocInstanceMap.get(key) as InstanceType<BlocConstructor<B>>;
   }
 
-  registerIsolatedBlocInstance(bloc: BlocBase<any>): void {
+  registerIsolatedBlocInstance(bloc: BlocBase<any, any>): void {
     const blocClass = bloc.constructor;
     const blocs = this.isolatedBlocMap.get(blocClass);
     this.log('Register isolated bloc', blocClass.name, bloc.id);
@@ -164,7 +167,7 @@ export class Blac {
     }
   }
 
-  unregisterIsolatedBlocInstance(bloc: BlocBase<any>): void {
+  unregisterIsolatedBlocInstance(bloc: BlocBase<any, any>): void {
     const blocClass = bloc.constructor;
     const blocs = this.isolatedBlocMap.get(blocClass);
     this.log('Unregister isolated bloc', blocClass.name, bloc.id);
@@ -178,7 +181,7 @@ export class Blac {
     }
   }
 
-  findIsolatedBlocInstance<B extends BlocBase<any>>(
+  findIsolatedBlocInstance<B extends BlocBase<any, any>>(
     blocClass: BlocConstructor<B>,
     id: BlocInstanceId,
   ): InstanceType<BlocConstructor<B>> | undefined {
@@ -189,20 +192,14 @@ export class Blac {
     return undefined;
   }
 
-  createNewBlocInstance<B extends BlocBase<any>>(
+  createNewBlocInstance<B extends BlocBase>(
     blocClass: BlocConstructor<B>,
     id: BlocInstanceId,
-    props: ConstructorParameters<BlocConstructor<B>> | undefined,
+    props?: InferPropsFromGeneric<B>,
   ): InstanceType<BlocConstructor<B>> {
     const base = blocClass as unknown as BlocBaseAbstract;
-    const hasCreateMethod = Object.prototype.hasOwnProperty.call(
-      blocClass,
-      'create',
-    );
 
-    const newBloc = hasCreateMethod
-      ? base.create()
-      : new blocClass(props as never);
+    const newBloc = new blocClass(props as never);
     newBloc.updateId(id);
 
     this.log('Create new bloc instance', {
@@ -214,23 +211,22 @@ export class Blac {
 
     if (base.isolated) {
       this.registerIsolatedBlocInstance(newBloc);
-      return newBloc as InstanceType<BlocConstructor<B>>;
+      return newBloc as InstanceType<BlocConstructor<any>>;
     }
 
     this.registerBlocInstance(newBloc);
-    return newBloc as InstanceType<BlocConstructor<B>>;
+    return newBloc as InstanceType<BlocConstructor<any>>;
   }
 
-  getBloc<B extends BlocConstructor<BlocGeneric<S, A>>, S = any, A = any>(
+  getBloc<B extends BlocConstructor<any>>(
     blocClass: B,
     options: {
       id?: BlocInstanceId;
-      props?: ConstructorParameters<BlocConstructor<B>>;
+      props?: ConstructorParameters<B>;
       reconnect?: boolean;
     } = {},
   ): InstanceType<B> {
-    const base = blocClass as unknown as InstanceType<B>;
-    const isIsolated = base.isolated;
+    const isIsolated = (blocClass as InstanceType<B>).isolated;
     const id = options.id || blocClass.name;
 
     const registered = isIsolated
@@ -249,7 +245,7 @@ export class Blac {
     return this.createNewBlocInstance(blocClass, id, options.props);
   }
 
-  getAllBlocs = <B extends BlocBase<any>>(
+  getAllBlocs = <B extends BlocBase<any, any>>(
     blocClass: BlocConstructor<B>,
     options: {
       searchIsolated?: boolean;
@@ -267,11 +263,5 @@ export class Blac {
       return blocs.filter((b) => b instanceof blocClass) as B[];
     }
     return [];
-  };
-
-  configure = (config: BlacConfig) => {
-    if (config.exposeBlacInstance) {
-      // window.__blac = this;
-    }
   };
 }

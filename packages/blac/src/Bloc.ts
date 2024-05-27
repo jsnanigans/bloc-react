@@ -1,15 +1,9 @@
 import { BlacLifecycleEvent } from './Blac';
 import { BlocBase } from './BlocBase';
 
-export abstract class Bloc<S, A> extends BlocBase<S> {
-  static create: () => BlocBase<any>;
-
-  constructor(state: S, props?: unknown) {
-    super(state);
-  }
-
+export abstract class Bloc<S, A, P = any> extends BlocBase<S, P> {
   /**
-   * The reducer is called whenever a new action is emited,
+   * The reducer is called whenever a new action is emitted,
    * @param action: the action from "add"
    * @param state: the current state
    * @returns: the new state

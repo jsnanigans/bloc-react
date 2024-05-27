@@ -1,13 +1,10 @@
-import { afterEach, beforeEach, describe, expect, it, test, vi } from 'vitest';
-import { Blac, BlacEvent } from './Blac';
+import { afterEach, describe, expect, it, test, vi } from 'vitest';
+import { Blac, BlacLifecycleEvent } from './Blac';
 import { Cubit } from './Cubit';
 
 class ExampleBloc extends Cubit<undefined> {}
 class ExampleBlocKeepAlive extends Cubit<undefined> {
   static keepAlive = true;
-}
-class ExampleBlocWithCreate extends Cubit<undefined> {
-  static create = () => new ExampleBlocWithCreate(undefined);
 }
 class ExampleBlocIsolated extends Cubit<undefined> {
   static isolated = true;
@@ -137,35 +134,28 @@ describe('Blac', () => {
   describe('createNewBlocInstance', () => {
     it('should create a new instance of the bloc', () => {
       const blac = new Blac();
-      const bloc = blac.createNewBlocInstance(ExampleBloc, 'foo', {});
+      const bloc = blac.createNewBlocInstance(ExampleBloc, 'foo');
       expect(bloc).toBeInstanceOf(ExampleBloc);
     });
 
     it('should set the bloc id', () => {
       const blac = new Blac();
-      const bloc = blac.createNewBlocInstance(ExampleBloc, 'foo', {});
+      const bloc = blac.createNewBlocInstance(ExampleBloc, 'foo');
       expect(bloc.id).toBe('foo');
     });
 
     it('should register the bloc', () => {
       const blac = new Blac();
-      const bloc = blac.createNewBlocInstance(ExampleBloc, 'foo', {});
+      const bloc = blac.createNewBlocInstance(ExampleBloc, 'foo');
       const key = blac.createBlocInstanceMapKey(bloc.name, bloc.id);
       expect(blac.blocInstanceMap.get(key)).toBe(bloc);
     });
 
     it('should register the bloc as isolated if the bloc is isolated', () => {
       const blac = new Blac();
-      const bloc = blac.createNewBlocInstance(ExampleBlocIsolated, 'foo', {});
+      const bloc = blac.createNewBlocInstance(ExampleBlocIsolated, 'foo');
       const blocs = blac.isolatedBlocMap.get(ExampleBlocIsolated);
       expect(blocs).toEqual([bloc]);
-    });
-
-    it('should call the static `create` method on the bloc if its defined', () => {
-      const blac = new Blac();
-      const spy = vi.spyOn(ExampleBlocWithCreate, 'create');
-      blac.createNewBlocInstance(ExampleBlocWithCreate, 'foo', {});
-      expect(spy).toHaveBeenCalled();
     });
   });
 
@@ -216,9 +206,9 @@ describe('Blac', () => {
   describe('getAllBlocs', () => {
     it('should return all the blocs registered', () => {
       const blac = new Blac();
-      blac.createNewBlocInstance(ExampleBloc, 'foo1', {});
-      blac.createNewBlocInstance(ExampleBloc, 'foo2', {});
-      blac.createNewBlocInstance(ExampleBloc, 'foo3', {});
+      blac.createNewBlocInstance(ExampleBloc, 'foo1');
+      blac.createNewBlocInstance(ExampleBloc, 'foo2');
+      blac.createNewBlocInstance(ExampleBloc, 'foo3');
       const result = blac.getAllBlocs(ExampleBloc);
       const resultIdMap = result.map((b) => b.id);
       expect(resultIdMap).toEqual(['foo1', 'foo2', 'foo3']);
@@ -226,9 +216,9 @@ describe('Blac', () => {
 
     it('should return all isolated instances if the option `searchIsolated` is true', () => {
       const blac = new Blac();
-      blac.createNewBlocInstance(ExampleBlocIsolated, 'foo1', {});
-      blac.createNewBlocInstance(ExampleBlocIsolated, 'foo2', {});
-      blac.createNewBlocInstance(ExampleBlocIsolated, 'foo3', {});
+      blac.createNewBlocInstance(ExampleBlocIsolated, 'foo1');
+      blac.createNewBlocInstance(ExampleBlocIsolated, 'foo2');
+      blac.createNewBlocInstance(ExampleBlocIsolated, 'foo3');
       const result = blac.getAllBlocs(ExampleBlocIsolated, {
         searchIsolated: true,
       });
@@ -262,7 +252,7 @@ describe('Blac', () => {
       const blac = new Blac();
       const bloc = new ExampleBloc(undefined);
       const spy = vi.spyOn(blac, 'disposeBloc');
-      blac.report(BlacEvent.BLOC_DISPOSED, bloc);
+      blac.report(BlacLifecycleEvent.BLOC_DISPOSED, bloc);
       expect(spy).toHaveBeenCalled();
       expect(spy).toHaveBeenCalledWith(bloc);
     });
@@ -271,7 +261,7 @@ describe('Blac', () => {
       const blac = new Blac();
       const bloc = new ExampleBloc(undefined);
       const spy = vi.spyOn(blac, 'disposeBloc');
-      blac.report(BlacEvent.LISTENER_REMOVED, bloc);
+      blac.report(BlacLifecycleEvent.LISTENER_REMOVED, bloc);
       expect(spy).toHaveBeenCalled();
     });
 
@@ -279,7 +269,7 @@ describe('Blac', () => {
       const blac = new Blac();
       const bloc = new ExampleBlocKeepAlive(undefined);
       const spy = vi.spyOn(blac, 'disposeBloc');
-      blac.report(BlacEvent.LISTENER_REMOVED, bloc);
+      blac.report(BlacLifecycleEvent.LISTENER_REMOVED, bloc);
       expect(spy).not.toHaveBeenCalled();
     });
 
@@ -288,7 +278,7 @@ describe('Blac', () => {
       const bloc = new ExampleBloc(undefined);
       bloc.observer.subscribe(() => {});
       const spy = vi.spyOn(blac, 'disposeBloc');
-      blac.report(BlacEvent.LISTENER_REMOVED, bloc);
+      blac.report(BlacLifecycleEvent.LISTENER_REMOVED, bloc);
       expect(spy).not.toHaveBeenCalled();
     });
   });
@@ -331,18 +321,18 @@ describe('Blac', () => {
       blac.addPlugin(plugin1);
       blac.addPlugin(plugin2);
       const bloc = new ExampleBloc(undefined);
-      blac.reportToPlugins(BlacEvent.BLOC_DISPOSED, bloc);
+      blac.reportToPlugins(BlacLifecycleEvent.BLOC_DISPOSED, bloc);
 
       expect(plugin1.onEvent).toHaveBeenCalled();
       expect(plugin2.onEvent).toHaveBeenCalled();
 
       expect(plugin1.onEvent).toHaveBeenCalledWith(
-        BlacEvent.BLOC_DISPOSED,
+        BlacLifecycleEvent.BLOC_DISPOSED,
         bloc,
         undefined,
       );
       expect(plugin2.onEvent).toHaveBeenCalledWith(
-        BlacEvent.BLOC_DISPOSED,
+        BlacLifecycleEvent.BLOC_DISPOSED,
         bloc,
         undefined,
       );

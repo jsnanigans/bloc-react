@@ -1,14 +1,7 @@
 import { BlacLifecycleEvent } from './Blac';
 import { BlocBase } from './BlocBase';
 
-export abstract class Cubit<S, P> extends BlocBase<S, P> {
-  static create: () => Cubit<any, any>;
-
-  // constructor(props?: P) {
-  //   super(undefined);
-  //   this._props = props;
-  // }
-
+export abstract class Cubit<S, P = null> extends BlocBase<S, P> {
   /**
    * Update the state then will notify all observers
    * @param state: new state
@@ -47,12 +40,4 @@ export abstract class Cubit<S, P> extends BlocBase<S, P> {
       this.emit({ ...this.state, ...statePatch });
     }
   }
-
-  addSubscriber = (
-    callback: (newState: S, oldState: S) => void,
-  ): (() => void) => {
-    this.blac.report(BlacLifecycleEvent.LISTENER_ADDED, this);
-    this.observer.subscribe(callback);
-    return () => this.handleUnsubscribe(callback);
-  };
 }

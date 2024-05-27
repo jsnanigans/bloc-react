@@ -4,8 +4,9 @@ import { useBloc } from '@blac/react';
 
 class CounterGlobalBloc extends Cubit<number> {
   static keepAlive = true;
-  static create = () => new CounterGlobalBloc(0);
-
+  constructor() {
+    super(0);
+  }
   increment = () => this.emit(this.state + 1);
   decrement = () => this.emit(this.state - 1);
 }

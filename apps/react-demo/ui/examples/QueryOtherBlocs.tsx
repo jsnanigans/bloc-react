@@ -4,7 +4,9 @@ import { Blac, Cubit } from 'blac';
 import { useBloc } from '@blac/react';
 import { Canvas, useFrame } from '@react-three/fiber';
 
-class IsolatedBloc extends Cubit<{ x: number; y: number }> {
+type IsolatedBlocProps = { start: [number, number] };
+
+class IsolatedBloc extends Cubit<{ x: number; y: number }, IsolatedBlocProps> {
   static isolated = true;
   velocity = { x: Math.random() * 3 - 1.5, y: Math.random() * 3 - 1.5 };
   minX = -300;
@@ -14,7 +16,7 @@ class IsolatedBloc extends Cubit<{ x: number; y: number }> {
   size = 10;
   others: IsolatedBloc[] = [];
 
-  constructor(props: { start: [number, number] }) {
+  constructor(props: IsolatedBlocProps) {
     super({ x: props?.start[0] ?? 0, y: props?.start[1] ?? 0 });
 
     const b = this.blac.getAllBlocs(IsolatedBloc);

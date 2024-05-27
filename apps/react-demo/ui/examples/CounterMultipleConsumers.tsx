@@ -8,11 +8,12 @@ interface CounterMultipleConsumerState {
 }
 
 export class CounterMultipleConsumerBloc extends Cubit<CounterMultipleConsumerState> {
-  static create = () =>
-    new CounterMultipleConsumerBloc({
+  constructor() {
+    super({
       count: 0,
       showDynamic: true,
     });
+  }
 
   increment = () => this.patch({ count: this.state.count + 1 });
   toggleDynamic = () => this.patch({ showDynamic: !this.state.showDynamic });

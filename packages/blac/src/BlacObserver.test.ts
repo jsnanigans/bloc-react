@@ -44,8 +44,8 @@ describe('BlacObserver', () => {
       observable.subscribe(observer2);
       observable.notify(newState, oldState);
 
-      expect(observer1).toHaveBeenCalledWith(newState, oldState);
-      expect(observer2).toHaveBeenCalledWith(newState, oldState);
+      expect(observer1).toHaveBeenCalledWith(newState, oldState, undefined);
+      expect(observer2).toHaveBeenCalledWith(newState, oldState, undefined);
     });
   });
 

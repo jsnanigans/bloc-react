@@ -10,25 +10,39 @@ class PropsBloc extends Cubit<{ display: string }, PropsBlocProps> {
   constructor(props: PropsBlocProps) {
     super({ display: props.name });
   }
+
+  jumbleLetters = () => {
+    let newName = this.state.display;
+
+    while (newName === this.state.display) {
+      const rndOrder = this.state.display
+        .split('')
+        .sort(() => Math.random() - 0.5)
+        .join('')
+        .toLowerCase();
+      const firstCharUpper =
+        rndOrder.charAt(0).toUpperCase() + rndOrder.slice(1);
+      newName = firstCharUpper;
+    }
+
+    this.patch({ display: newName });
+  };
 }
 
-const Props: FC<{ name: string }> = ({ name }) => {
-  // pass the props to the bloc
-  const [{ display }] = useBloc(PropsBloc, {
-    props: {
-      name,
-    },
+const Props: FC<PropsBlocProps> = (props) => {
+  const [{ display }, { jumbleLetters }] = useBloc(PropsBloc, {
+    props,
   });
 
-  return <div>Name: {display}</div>;
+  return <button onClick={jumbleLetters}>Name: {display}</button>;
 };
 
 function PropsExample() {
   return (
     <div>
-      <Props name="Ben" />
+      <Props name="Benjamin" />
       <Props name="Val" />
-      <Props name="Loic" />
+      <Props name="Leopold" />
     </div>
   );
 }

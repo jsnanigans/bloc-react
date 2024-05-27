@@ -7,7 +7,9 @@ class DemoCubit extends Cubit<{
   name: string;
   email: string;
 }> {
-  static create = () => new DemoCubit({ name: 'Jann Doe', email: 'j@d.co' });
+  constructor() {
+    super({ name: 'Jann Doe', email: 'j@d.co' });
+  }
   setName = (e: ChangeEvent<HTMLInputElement>) =>
     this.patch({ name: e.target.value });
   setEmail = (e: ChangeEvent<HTMLInputElement>) =>

@@ -3,7 +3,9 @@ import { Cubit } from 'blac';
 import React, { FC, useState } from 'react';
 
 export class CounterMultiInstanceBloc extends Cubit<number> {
-  static create = () => new CounterMultiInstanceBloc(0);
+  constructor() {
+    super(0);
+  }
   increment = () => this.emit(this.state + 1);
 }
 

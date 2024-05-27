@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi, test } from 'vitest';
 import { BlocBase } from './BlocBase';
-import { Blac, BlacEvent } from './Blac';
+import { Blac, BlacLifecycleEvent } from './Blac';
 import { BlacPlugin } from './BlacPlugin';
 
 class BlocBaseSimple extends BlocBase<unknown> {}
@@ -28,11 +28,11 @@ describe('BlocBase', () => {
       const spy = vi.fn();
       const blacPlugin = {
         name: 'test',
-        onEvent: (e: BlacEvent) => spy(e),
+        onEvent: (e: BlacLifecycleEvent) => spy(e),
       };
       blac.addPlugin(blacPlugin as BlacPlugin);
       new BlocBaseSimple(0);
-      expect(spy).toHaveBeenCalledWith(BlacEvent.BLOC_CREATED);
+      expect(spy).toHaveBeenCalledWith(BlacLifecycleEvent.BLOC_CREATED);
     });
 
     it('should set the `id` to the constructors name', () => {
@@ -40,33 +40,11 @@ describe('BlocBase', () => {
       expect(instance.id).toBe('BlocBaseSimple');
     });
 
-    it('should set local prop `isolated` to whatever tht static prop was set to when constructed', () => {
+    it('should set local prop `isolated` to whatever the static prop was set to when constructed', () => {
       const instance = new BlocBaseSimple(0);
       expect(instance.isolated).toBe(false);
       const instance2 = new BlocBaseSimpleIsolated(0);
       expect(instance2.isolated).toBe(true);
-    });
-  });
-
-  describe('props', () => {
-    it('should return private props if set', () => {
-      const instance = new BlocBaseSimple(0);
-      const props = { a: 1 };
-      instance.props = props;
-      expect(instance.props).toBe(props);
-    });
-
-    it('should return constructor props if no local props are set', () => {
-      const constructorProps = { a: 1 };
-      BlocBaseSimple._propsOnInit = constructorProps;
-      const instance = new BlocBaseSimple(0);
-      expect(instance.props).toBe(constructorProps);
-    });
-
-    it('should return undefined if no props are set', () => {
-      const instance = new BlocBaseSimple(0);
-      BlocBaseSimple._propsOnInit = undefined;
-      expect(instance.props).toBeUndefined();
     });
   });
 
@@ -89,7 +67,7 @@ describe('BlocBase', () => {
       instance.addSubscriber(() => {});
       expect(blacSpy).toHaveBeenNthCalledWith(
         1,
-        BlacEvent.LISTENER_ADDED,
+        BlacLifecycleEvent.LISTENER_ADDED,
         instance,
       );
     });
@@ -104,7 +82,7 @@ describe('BlocBase', () => {
       expect(observerSpy).toHaveBeenCalledWith(callback);
     });
 
-    it('should return the a method that unsubscribes the listener', () => {
+    it('should return the method that unsubscribes the listener', async () => {
       const instance = new BlocBaseSimple(0);
       const observer = instance.observer;
       const observerSpy = vi.spyOn(observer, 'unsubscribe');
@@ -114,6 +92,7 @@ describe('BlocBase', () => {
       expect(observerSpy).not.toHaveBeenCalled();
 
       unsubscribe();
+      await new Promise((resolve) => setTimeout(resolve, 10));
       expect(observerSpy).toHaveBeenCalledWith(callback);
     });
   });
@@ -125,7 +104,10 @@ describe('BlocBase', () => {
       const blacSpy = vi.spyOn(blac, 'report');
       const callback = () => {};
       instance.addSubscriber(callback);
-      expect(blacSpy).toHaveBeenCalledWith(BlacEvent.LISTENER_ADDED, instance);
+      expect(blacSpy).toHaveBeenCalledWith(
+        BlacLifecycleEvent.LISTENER_ADDED,
+        instance,
+      );
     });
   });
 
@@ -135,7 +117,10 @@ describe('BlocBase', () => {
       const blac = instance.blac;
       const blacSpy = vi.spyOn(blac, 'report');
       instance.dispose();
-      expect(blacSpy).toHaveBeenCalledWith(BlacEvent.BLOC_DISPOSED, instance);
+      expect(blacSpy).toHaveBeenCalledWith(
+        BlacLifecycleEvent.BLOC_DISPOSED,
+        instance,
+      );
     });
   });
 

@@ -198,7 +198,10 @@ class DemoPageBloc extends Cubit<MainBlocState> {
       name: 'Props',
       description: (
         <>
-          <p></p>
+          <p>
+            Props are passed to the constructor of a Bloc/Cubit. Use them to
+            customise each instance, similar to props for React components
+          </p>
         </>
       ),
       component: <Props />,

@@ -1,12 +1,9 @@
 import {
   Blac,
-  Bloc,
   BlocBase,
   BlocConstructor,
-  BlocConstructorParameters,
   BlocGeneric,
   BlocInstanceId,
-  Cubit,
   InferPropsFromGeneric,
   InferStateFromGeneric,
 } from 'blac';
@@ -18,11 +15,10 @@ import externalBlocStore from './externalBlocStore';
 //   instance: B,
 // ];
 
-type HookTypes<
-  B extends BlocConstructor<BlocGeneric<S, A>>,
-  S = any,
-  A = any,
-> = [InferStateFromGeneric<InstanceType<B>>, InstanceType<B>];
+type HookTypes<B extends BlocConstructor<BlocGeneric>> = [
+  InferStateFromGeneric<InstanceType<B>>,
+  InstanceType<B>,
+];
 
 // type BlocHookData<B extends BlocBase<S>, S> = [S, InstanceType<B>]; // B is the bloc class, S is the state of the bloc
 // type UseBlocClassResult<B, S> = BlocHookData<B, S>;
@@ -39,19 +35,17 @@ export interface BlocHookOptions<B extends BlocGeneric<any, any>> {
 
 export class UseBlocClass {
   static useBloc<
-    B extends typeof Cubit<S, P> | typeof Bloc<S, A>,
-    S = any,
-    A = any,
-    P = any,
-  >(bloc: B, options?: BlocHookOptions<InstanceType<B>>): HookTypes<B> {
+    B extends BlocConstructor<BlocGeneric>,
+    O extends BlocHookOptions<InstanceType<B>>,
+  >(bloc: B, options?: O): HookTypes<B> {
     const rid = useId();
     const usedKeys: string[] = [];
     // default options
     let dependencyArray: BlocHookDependencyArrayFn<InstanceType<B>> = (
-      state: InferStateFromGeneric<B>,
+      state,
     ) => {
       if (typeof state !== 'object') {
-        return [state];
+        return [state] as unknown[];
       }
 
       const used: unknown[] = [];
@@ -71,7 +65,7 @@ export class UseBlocClass {
       props = options.props ?? props;
     }
 
-    const base = bloc as unknown as BlocBase<S>;
+    const base = bloc as unknown as BlocBase<B, O['props']>;
     const isIsolated = base.isolated;
     if (isIsolated) {
       blocId = rid;

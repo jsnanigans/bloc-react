@@ -10,7 +10,9 @@ enum CounterActions {
 }
 
 class CounterBloc extends Bloc<CounterState, CounterActions> {
-  static create = () => new CounterBloc(0);
+  constructor() {
+    super(0);
+  }
 
   reducer(action: CounterActions, state: CounterState) {
     switch (action) {

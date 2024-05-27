@@ -3,7 +3,9 @@ import React, { FC } from 'react';
 import { useBloc } from '@blac/react';
 
 class CounterCubit extends Cubit<number> {
-  static create = () => new CounterCubit(0);
+  constructor() {
+    super(0);
+  }
 
   increment = () => this.emit(this.state + 1);
   decrement = () => this.emit(this.state - 1);
