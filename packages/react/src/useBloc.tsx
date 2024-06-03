@@ -92,20 +92,18 @@ export class UseBlocClass {
       getServerSnapshot,
     );
 
-    useEffect(() => {
-      if ((resolvedBloc.isolated && props) || (props && !resolvedBloc.props)) {
-        resolvedBloc.props = props;
-      }
-    }, [props]);
-
     let returnState = state;
-    if (typeof state === 'object') {
-      returnState = new Proxy(state, {
-        get(target, prop) {
-          usedKeys.push(prop as string);
-          return Reflect.get(target, prop);
-        },
-      });
+    try {
+      if (typeof state === 'object') {
+        returnState = new Proxy(state, {
+          get(target, prop) {
+            usedKeys.push(prop as string);
+            return Reflect.get(target, prop);
+          },
+        });
+      }
+    } catch (error) {
+      Blac.instance.log('useBloc Error', error);
     }
 
     return [returnState, resolvedBloc];
