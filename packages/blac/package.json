@@ -21,7 +21,7 @@
     "pub:patch": "npm run build && bun publish.ts && cd dist && npm publish",
     "dev": "bun dev.ts",
     "prettier": "prettier --write ./src",
-    "test": "vitest run",
+    "test": "vitest",
     "test:watch": "vitest --watch",
     "coverage": "vitest run --coverage",
     "pub:alpha": "npm run build && npm publish --tag alpha"
@@ -36,7 +36,6 @@
     "eslint": "^8.57.0",
     "prettier": "^3.2.5",
     "typescript": "^5.4.3",
-    "vite-plugin-dts": "^3.7.3",
-    "vitest": "^1.4.0"
+    "vite-plugin-dts": "^3.7.3"
   }
 }

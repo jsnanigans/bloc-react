@@ -21,16 +21,19 @@
     "pub:patch": "npm run build && bun publish.ts && cd dist && npm publish",
     "dev": "bun dev.ts",
     "prettier": "prettier --write ./src",
-    "test": "vitest run --coverage",
+    "test": "vitest --config vitest.config.ts",
+    "test:watch": "vitest --watch --config vitest.config.ts",
     "pub": "npm run build && npm publish"
   },
   "dependencies": {
     "blac": "*"
   },
   "devDependencies": {
-    "@types/react": "^18.2.69",
+    "@testing-library/dom": "^10.1.0",
+    "@testing-library/react": "^16.0.0",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
     "react": "^18.2.0",
-    "vite-plugin-dts": "^3.7.3",
-    "vitest": "^1.4.0"
+    "vite-plugin-dts": "^3.7.3"
   }
 }

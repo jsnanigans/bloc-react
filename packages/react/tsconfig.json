@@ -12,5 +12,6 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
+  "include": ["@testing-library/react"],
   "exclude": ["publish.ts"]
 }

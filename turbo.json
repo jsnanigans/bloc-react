@@ -8,6 +8,11 @@
     },
     "dev": {},
     "pub:patch": {},
-    "lint": {}
+    "lint": {},
+    "test": {},
+    "test:watch": {
+      "cache": false,
+      "persistent": true
+    }
   }
 }

@@ -1,4 +1,5 @@
-import { BlocBase, BlocGeneric, InferStateFromGeneric } from 'blac';
+import { BlocGeneric, InferStateFromGeneric } from 'blac';
+import { BlocHookDependencyArrayFn } from './useBloc';
 
 export interface ExternalStore<
   B extends BlocGeneric<any, any>,
@@ -14,15 +15,20 @@ const externalBlocStore = <
   S extends InferStateFromGeneric<B>,
 >(
   bloc: B,
-  dependencyArray: (state: S) => unknown[],
+  dependencyArray: BlocHookDependencyArrayFn<InstanceType<any>>,
 ): ExternalStore<B, S> => {
-  let lastDependencyCheck = dependencyArray(bloc.state);
-
   return {
-    subscribe: (listener: () => void) => {
+    subscribe: (listener: (state: S) => void) => {
       const unSub = bloc.addSubscriber((data) => {
         try {
-          const newDependencyCheck = dependencyArray(data) ?? [];
+          const lastDependencyCheck = dependencyArray(
+            bloc._oldState,
+            bloc._oldState,
+          );
+          const newDependencyCheck = dependencyArray(
+            bloc.state,
+            bloc._oldState,
+          );
 
           let allEqual = true;
           for (let i = 0; i < newDependencyCheck.length; i++) {
@@ -33,15 +39,13 @@ const externalBlocStore = <
           }
 
           if (!allEqual) {
-            lastDependencyCheck = newDependencyCheck;
-            listener();
+            listener(bloc.state);
           }
         } catch (e) {
           console.error({
             e,
             bloc,
             dependencyArray,
-            lastDependencyCheck,
           });
         }
       });

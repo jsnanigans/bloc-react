@@ -29,6 +29,7 @@ export abstract class BlocBase<S = any, P = any> {
   }
 
   public _state: S;
+  public _oldState: S;
   public _props: P = null as P;
 
   get state(): S {
@@ -90,6 +91,7 @@ export abstract class BlocBase<S = any, P = any> {
 
   pushState = (newState: S, oldState: S, action?: any): void => {
     this._state = newState;
+    this._oldState = oldState;
     this.observer.notify(newState, oldState, action);
 
     this.blac.report(BlacLifecycleEvent.STATE_CHANGED, this, {
