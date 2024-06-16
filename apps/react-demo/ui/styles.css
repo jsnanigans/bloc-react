@@ -208,8 +208,8 @@ button.lead {
 
   100% {
     box-shadow:
-      0 0 0 5px #ffffff22,
-      inset 0 0 0 5px #ffffff22;
+      0 0 0 5px transparent,
+      inset 0 0 0 5px transparent;
   }
 }
 
@@ -218,7 +218,6 @@ button.lead {
   padding: 15px;
   margin: 1em 0;
   font-weight: 400;
-  font-size: 0.9rem;
   line-height: 1.5;
 }
 
@@ -226,6 +225,7 @@ button.lead {
   position: absolute;
   top: 0;
   right: 0;
+  font-size: 0.8rem;
   padding: 5px 10px;
 }
 

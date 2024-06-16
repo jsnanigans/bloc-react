@@ -1,16 +1,21 @@
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Cubit } from 'blac';
 import React, { FC } from 'react';
 import { beforeEach, expect, test } from 'vitest';
 import { useBloc } from '../src';
 
+type CounterProps = {
+  initialState?: number;
+  renderCount?: boolean;
+  renderName?: boolean;
+};
 class CounterCubit extends Cubit<
   { count: number; name: string; renderCount: boolean; renderName: boolean },
-  { initialState?: number; renderCount?: boolean; renderName?: boolean }
+  CounterProps
 > {
   static isolated = true;
-  constructor(props: { initialState?: number } = {}) {
+  constructor(props: CounterProps) {
     super({
       count: props.initialState ?? 0,
       name: 'Name 1',

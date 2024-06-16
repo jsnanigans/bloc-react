@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi, test } from 'vitest';
 import { BlocBase } from './BlocBase';
 import { Blac, BlacLifecycleEvent } from './Blac';
 import { BlacPlugin } from './BlacPlugin';
+import { BlacObserver } from './BlacObserver';
 
 class BlocBaseSimple extends BlocBase<unknown> {}
 class BlocBaseSimpleIsolated extends BlocBase<unknown> {
@@ -64,7 +65,7 @@ describe('BlocBase', () => {
       const blac = instance.blac;
       const blacSpy = vi.spyOn(blac, 'report');
 
-      instance.addSubscriber(() => {});
+      instance.addSubscriber({fn: () => {}});
       expect(blacSpy).toHaveBeenNthCalledWith(
         1,
         BlacLifecycleEvent.LISTENER_ADDED,
@@ -77,7 +78,7 @@ describe('BlocBase', () => {
       const observer = instance.observer;
       const observerSpy = vi.spyOn(observer, 'subscribe');
       expect(observerSpy).not.toHaveBeenCalled();
-      const callback = () => {};
+      const callback = { fn: () => {} } as BlacObserver<any>;
       instance.addSubscriber(callback);
       expect(observerSpy).toHaveBeenCalledWith(callback);
     });
@@ -87,7 +88,7 @@ describe('BlocBase', () => {
       const observer = instance.observer;
       const observerSpy = vi.spyOn(observer, 'unsubscribe');
       expect(observerSpy).not.toHaveBeenCalled();
-      const callback = () => {};
+      const callback = { fn: () => {} };
       const unsubscribe = instance.addSubscriber(callback);
       expect(observerSpy).not.toHaveBeenCalled();
 
@@ -102,7 +103,7 @@ describe('BlocBase', () => {
       const instance = new BlocBaseSimple(0);
       const blac = instance.blac;
       const blacSpy = vi.spyOn(blac, 'report');
-      const callback = () => {};
+      const callback = { fn: () => {} };
       instance.addSubscriber(callback);
       expect(blacSpy).toHaveBeenCalledWith(
         BlacLifecycleEvent.LISTENER_ADDED,

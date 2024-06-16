@@ -1,8 +1,9 @@
-export type BlacObserver<S> = (
-  newState: S,
-  oldState: S,
-  action?: any,
-) => void | Promise<void>;
+import { BlocHookDependencyArrayFn } from './types';
+
+export type BlacObserver<S> = {
+  fn: (newState: S, oldState: S, action?: any) => void | Promise<void>;
+  dependencyArray?: BlocHookDependencyArrayFn<any>;
+};
 
 export class BlacObservable<S> {
   private _observers = new Set<BlacObserver<S>>();
@@ -25,7 +26,30 @@ export class BlacObservable<S> {
   }
 
   notify(newState: S, oldState: S, action?: any) {
-    this._observers.forEach((observer) => observer(newState, oldState, action));
+    this._observers.forEach((observer) => {
+      let shouldUpdate = false;
+
+      if (observer.dependencyArray) {
+        const lastDependencyCheck = observer.dependencyArray(
+          oldState,
+          oldState,
+        );
+        const newDependencyCheck = observer.dependencyArray(newState, oldState);
+
+        for (let i = 0; i < newDependencyCheck.length; i++) {
+          if (newDependencyCheck[i] !== lastDependencyCheck[i]) {
+            shouldUpdate = true;
+            break;
+          }
+        }
+      } else {
+        shouldUpdate = true;
+      }
+
+      if (shouldUpdate) {
+        return observer.fn(newState, oldState, action);
+      }
+    });
   }
 
   dispose() {

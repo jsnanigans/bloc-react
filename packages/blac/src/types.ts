@@ -14,7 +14,8 @@ export type ValueType<B extends BlocBase<any, any>> =
 export type BlocGeneric<S = any, A = any, P = any> =
   | Bloc<S, A, P>
   | Cubit<S, P>;
-export type InferStateFromGeneric<T> =
+
+export type BlocState<T> =
   T extends Bloc<infer S, any, any>
     ? S
     : T extends Cubit<infer S, any>
@@ -30,3 +31,8 @@ export type InferPropsFromGeneric<T> =
 
 export type BlocConstructorParameters<B extends BlocBase<any, any>> =
   BlocConstructor<B> extends new (...args: infer P) => any ? P : never;
+
+export type BlocHookDependencyArrayFn<B extends BlocGeneric<any, any>> = (
+  newState: BlocState<B>,
+  oldState: BlocState<B>,
+) => unknown[];

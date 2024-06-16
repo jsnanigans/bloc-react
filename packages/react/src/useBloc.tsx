@@ -3,9 +3,10 @@ import {
   BlocBase,
   BlocConstructor,
   BlocGeneric,
+  BlocHookDependencyArrayFn,
   BlocInstanceId,
+  BlocState,
   InferPropsFromGeneric,
-  InferStateFromGeneric,
 } from 'blac';
 import { useId, useLayoutEffect, useMemo, useSyncExternalStore } from 'react';
 import externalBlocStore from './externalBlocStore';
@@ -16,17 +17,12 @@ import externalBlocStore from './externalBlocStore';
 // ];
 
 type HookTypes<B extends BlocConstructor<BlocGeneric>> = [
-  InferStateFromGeneric<InstanceType<B>>,
+  BlocState<InstanceType<B>>,
   InstanceType<B>,
 ];
 
 // type BlocHookData<B extends BlocBase<S>, S> = [S, InstanceType<B>]; // B is the bloc class, S is the state of the bloc
 // type UseBlocClassResult<B, S> = BlocHookData<B, S>;
-
-export type BlocHookDependencyArrayFn<B extends BlocGeneric<any, any>> = (
-  newState: InferStateFromGeneric<B>,
-  oldState: InferStateFromGeneric<B>,
-) => unknown[];
 
 export interface BlocHookOptions<B extends BlocGeneric<any, any>> {
   id?: string;
@@ -59,10 +55,8 @@ export class UseBlocClass {
       }
 
       const used: unknown[] = [];
-      for (const key in newState) {
-        if (usedKeys.has(key)) {
-          used.push(newState[key]);
-        }
+      for (const key of usedKeys) {
+        used.push(newState[key]);
       }
       return used;
     };
@@ -96,27 +90,29 @@ export class UseBlocClass {
       [resolvedBloc.createdAt],
     );
 
-    const state = useSyncExternalStore<InferStateFromGeneric<InstanceType<B>>>(
+    const state = useSyncExternalStore<BlocState<InstanceType<B>>>(
       subscribe,
       getSnapshot,
       getServerSnapshot,
     );
 
     const currentRenderUsedKeys = new Set<string>();
-    let returnState: InferStateFromGeneric<InstanceType<B>> = state;
-    try {
-      if (typeof state === 'object') {
-        returnState = new Proxy(state as any, {
-          get(target, prop) {
-            usedKeys.add(prop as string);
-            currentRenderUsedKeys.add(prop as string);
-            return Reflect.get(target, prop);
-          },
-        });
+    const returnState: BlocState<InstanceType<B>> = useMemo(() => {
+      try {
+        if (typeof state === 'object') {
+          return new Proxy(state as any, {
+            get(target, prop) {
+              usedKeys.add(prop as string);
+              currentRenderUsedKeys.add(prop as string);
+              return Reflect.get(target, prop);
+            },
+          });
+        }
+      } catch (error) {
+        Blac.instance.log('useBloc Error', error);
       }
-    } catch (error) {
-      Blac.instance.log('useBloc Error', error);
-    }
+      return state;
+    }, [state]);
 
     useLayoutEffect(() => {
       UseBlocClass.getUsedKeys(rid).clear();

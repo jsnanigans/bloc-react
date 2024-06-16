@@ -1,4 +1,3 @@
-import { BlacLifecycleEvent } from './Blac';
 import { BlocBase } from './BlocBase';
 
 export abstract class Bloc<S, A, P = any> extends BlocBase<S, P> {
@@ -18,13 +17,5 @@ export abstract class Bloc<S, A, P = any> extends BlocBase<S, P> {
     const oldState = this.state;
     const newState = this.reducer(action, this.state);
     this.pushState(newState, oldState, action);
-  };
-
-  addSubscriber = (
-    callback: (newState: S, oldState: S, action: A) => void,
-  ): (() => void) => {
-    this.blac.report(BlacLifecycleEvent.LISTENER_ADDED, this);
-    this.observer.subscribe(callback);
-    return () => this.handleUnsubscribe(callback);
   };
 }

@@ -1,7 +1,7 @@
+import { useBloc } from '@blac/react';
+import { Cubit } from 'blac';
 import type { ChangeEvent, FC, ReactNode } from 'react';
 import React from 'react';
-import { Cubit } from 'blac';
-import { useBloc } from '@blac/react';
 
 class DemoCubit extends Cubit<{
   name: string;
@@ -17,7 +17,7 @@ class DemoCubit extends Cubit<{
 }
 
 // Component that renders a flashing highlight when it is re-rendered
-const Flash: FC<{ children?: ReactNode }> = ({ children }) => {
+export const Flash: FC<{ children?: ReactNode }> = ({ children }) => {
   const rndCount = React.useRef(0);
   const rnd = Math.random();
 
@@ -27,7 +27,7 @@ const Flash: FC<{ children?: ReactNode }> = ({ children }) => {
     <div className="flash">
       {children}
       <div className="highlight" key={rnd} />
-      <div className="rnd">Render Count: {rndCount.current}</div>
+      <div className="rnd">#{rndCount.current}</div>
     </div>
   );
 };
@@ -77,12 +77,34 @@ const ChangeEmail: FC = () => {
 
 // Show both name and email
 const ShowAll: FC = () => {
-  const [{ name, email }] = useBloc(DemoCubit);
+  const [showEmail, setShowEmail] = React.useState(true);
+  const [showName, setShowName] = React.useState(true);
+  const [state] = useBloc(DemoCubit);
+
   return (
     <Flash>
-      Name: {name}
-      <br />
-      Email: {email}
+      <ul>
+        <li>
+          <label>
+            <input
+              type="checkbox"
+              checked={showName}
+              onChange={() => setShowName(!showName)}
+            />{' '}
+            Name: {showName ? state.name : <em>----</em>}
+          </label>
+        </li>
+        <li>
+          <label>
+            <input
+              type="checkbox"
+              checked={showEmail}
+              onChange={() => setShowEmail(!showEmail)}
+            />{' '}
+            Email: {showEmail ? state.email : <em>----</em>}
+          </label>
+        </li>
+      </ul>
     </Flash>
   );
 };

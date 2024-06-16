@@ -40,6 +40,9 @@ import CrossDependencyText from './examples/CrossDependency.tsx?raw';
 import BroadcastEvents from './examples/BroadcastEvents';
 import BroadcastEventsText from './examples/BroadcastEvents?raw';
 
+import LongList from './examples/LongList';
+import LongListText from './examples/LongList.tsx?raw';
+
 interface DemoData {
   name: string;
   description?: React.ReactNode;
@@ -193,6 +196,12 @@ class DemoPageBloc extends Cubit<MainBlocState> {
       ),
       component: <RerenderTest />,
       code: RerenderTestAsText,
+    },
+    {
+      name: 'Long List',
+      description: '',
+      component: <LongList />,
+      code: LongListText,
     },
     {
       name: 'Props',

@@ -61,6 +61,7 @@ test('should rerender when state changes', async () => {
   expect(instance).toBeInTheDocument();
   expect(renderCount).toBe(1);
   await userEvent.click(screen.getByText('+1'));
+  expect(screen.getByText('3443')).toBeInTheDocument();
   expect(renderCount).toBe(2);
 });
 

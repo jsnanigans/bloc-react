@@ -1,4 +1,3 @@
-import { BlacLifecycleEvent } from './Blac';
 import { BlocBase } from './BlocBase';
 
 export abstract class Cubit<S, P = null> extends BlocBase<S, P> {

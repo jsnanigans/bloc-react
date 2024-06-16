@@ -5,7 +5,7 @@ describe('BlacObserver', () => {
   describe('subscribe', () => {
     it('should add an observer to the list of observers', () => {
       const observable = new BlacObservable();
-      const observer = vi.fn();
+      const observer = { fn: vi.fn() };
       observable.subscribe(observer);
       expect(observable.observers.size).toBe(1);
       expect(observable.observers.has(observer)).toBe(true);
@@ -13,7 +13,7 @@ describe('BlacObserver', () => {
 
     it('should return a function to unsubscribe the observer', () => {
       const observable = new BlacObservable();
-      const observer = vi.fn();
+      const observer = { fn: vi.fn() };
       const unsubscribe = observable.subscribe(observer);
       expect(observable.observers.size).toBe(1);
       unsubscribe();
@@ -24,7 +24,7 @@ describe('BlacObserver', () => {
   describe('unsubscribe', () => {
     it('should remove an observer from the list of observers', () => {
       const observable = new BlacObservable();
-      const observer = vi.fn();
+      const observer = { fn: vi.fn() };
       observable.subscribe(observer);
       expect(observable.observers.size).toBe(1);
       observable.unsubscribe(observer);
@@ -35,8 +35,8 @@ describe('BlacObserver', () => {
   describe('notify', () => {
     it('should call all observers with the new and old state', () => {
       const observable = new BlacObservable();
-      const observer1 = vi.fn();
-      const observer2 = vi.fn();
+      const observer1 = { fn: vi.fn() };
+      const observer2 = { fn: vi.fn() };
       const newState = { foo: 'bar' };
       const oldState = { foo: 'baz' };
 
@@ -44,16 +44,16 @@ describe('BlacObserver', () => {
       observable.subscribe(observer2);
       observable.notify(newState, oldState);
 
-      expect(observer1).toHaveBeenCalledWith(newState, oldState, undefined);
-      expect(observer2).toHaveBeenCalledWith(newState, oldState, undefined);
+      expect(observer1.fn).toHaveBeenCalledWith(newState, oldState, undefined);
+      expect(observer2.fn).toHaveBeenCalledWith(newState, oldState, undefined);
     });
   });
 
   describe('dispose', () => {
     it('should remove all observers', () => {
       const observable = new BlacObservable();
-      const observer1 = vi.fn();
-      const observer2 = vi.fn();
+      const observer1 = { fn: vi.fn() };
+      const observer2 = { fn: vi.fn() };
 
       observable.subscribe(observer1);
       observable.subscribe(observer2);

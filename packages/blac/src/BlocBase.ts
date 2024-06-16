@@ -2,6 +2,7 @@ import { Blac, BlacLifecycleEvent } from './Blac';
 import BlacEvent from './BlacEvent';
 import { BlacObservable, BlacObserver } from './BlacObserver';
 import BlacAddon from './addons/BlacAddon';
+import { BlocHookDependencyArrayFn } from './types';
 
 export type BlocInstanceId = string | number | undefined;
 
@@ -29,7 +30,7 @@ export abstract class BlocBase<S = any, P = any> {
   }
 
   public _state: S;
-  public _oldState: S;
+  public _oldState: S | undefined;
   public _props: P = null as P;
 
   get state(): S {
@@ -46,12 +47,10 @@ export abstract class BlocBase<S = any, P = any> {
     this.id = id;
   };
 
-  addSubscriber = (
-    callback: (newState: S, oldState: S) => void,
-  ): (() => void) => {
+  addSubscriber = (observerItem: BlacObserver<S>): (() => void) => {
     this.blac.report(BlacLifecycleEvent.LISTENER_ADDED, this);
-    this.observer.subscribe(callback);
-    return () => this.handleUnsubscribe(callback);
+    this.observer.subscribe(observerItem);
+    return () => this.handleUnsubscribe(observerItem);
   };
 
   dispose() {
@@ -75,12 +74,14 @@ export abstract class BlocBase<S = any, P = any> {
 
     for (const addon of addons) {
       if (addon.onEmit) {
-        this.observer.subscribe((newState, oldState) => {
-          addon.onEmit?.({
-            newState,
-            oldState,
-            cubit: this,
-          });
+        this.observer.subscribe({
+          fn: (newState, oldState) => {
+            addon.onEmit?.({
+              newState,
+              oldState,
+              cubit: this,
+            });
+          },
         });
       }
       if (addon.onInit) {

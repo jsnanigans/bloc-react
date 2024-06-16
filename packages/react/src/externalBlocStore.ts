@@ -1,9 +1,8 @@
-import { BlocGeneric, InferStateFromGeneric } from 'blac';
-import { BlocHookDependencyArrayFn } from './useBloc';
+import { BlocGeneric, BlocState } from 'blac';
 
 export interface ExternalStore<
   B extends BlocGeneric<any, any>,
-  S extends InferStateFromGeneric<B>,
+  S extends BlocState<B>,
 > {
   subscribe: (onStoreChange: () => void) => () => void;
   getSnapshot: () => S;
@@ -12,42 +11,26 @@ export interface ExternalStore<
 
 const externalBlocStore = <
   B extends BlocGeneric<any, any>,
-  S extends InferStateFromGeneric<B>,
+  S extends BlocState<B>,
 >(
   bloc: B,
   dependencyArray: BlocHookDependencyArrayFn<InstanceType<any>>,
 ): ExternalStore<B, S> => {
   return {
     subscribe: (listener: (state: S) => void) => {
-      const unSub = bloc.addSubscriber((data) => {
-        try {
-          const lastDependencyCheck = dependencyArray(
-            bloc._oldState,
-            bloc._oldState,
-          );
-          const newDependencyCheck = dependencyArray(
-            bloc.state,
-            bloc._oldState,
-          );
-
-          let allEqual = true;
-          for (let i = 0; i < newDependencyCheck.length; i++) {
-            if (newDependencyCheck[i] !== lastDependencyCheck[i]) {
-              allEqual = false;
-              break;
-            }
-          }
-
-          if (!allEqual) {
+      const unSub = bloc.addSubscriber({
+        fn: (data) => {
+          try {
             listener(bloc.state);
+          } catch (e) {
+            console.error({
+              e,
+              bloc,
+              dependencyArray,
+            });
           }
-        } catch (e) {
-          console.error({
-            e,
-            bloc,
-            dependencyArray,
-          });
-        }
+        },
+        dependencyArray,
       });
 
       return () => {
