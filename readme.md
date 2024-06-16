@@ -1,6 +1,6 @@
-# Blac v1 ALPHA
+# Blac v1 BETA
 
-do not use this, the apis will change!
+APIs will change, use at your own risk!
 
 Blac core: https://www.npmjs.com/package/blac
 
