@@ -1,6 +1,6 @@
 {
   "name": "blac-blac",
-  "version": "1.0.18",
+  "version": "1.0.21",
   "license": "MIT",
   "main": "src/index.ts",
   "module": "src/index.ts",
