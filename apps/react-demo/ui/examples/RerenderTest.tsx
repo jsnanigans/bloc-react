@@ -84,27 +84,28 @@ const ShowAll: FC = () => {
   return (
     <Flash>
       <ul>
-        <li>
-          <label>
-            <input
-              type="checkbox"
-              checked={showName}
-              onChange={() => setShowName(!showName)}
-            />{' '}
-            Name: {showName ? state.name : <em>----</em>}
-          </label>
-        </li>
-        <li>
-          <label>
-            <input
-              type="checkbox"
-              checked={showEmail}
-              onChange={() => setShowEmail(!showEmail)}
-            />{' '}
-            Email: {showEmail ? state.email : <em>----</em>}
-          </label>
-        </li>
+        <li>Name: {showName ? state.name : <em>----</em>}</li>
+        <li>Email: {showEmail ? state.email : <em>----</em>}</li>
       </ul>
+      <label>
+        <input
+          type="checkbox"
+          id="showName"
+          checked={showName}
+          onChange={() => setShowName(!showName)}
+        />
+        Show Name
+      </label>
+      <br />
+      <label>
+        <input
+          type="checkbox"
+          id="showEmail"
+          checked={showEmail}
+          onChange={() => setShowEmail(!showEmail)}
+        />
+        Show Email
+      </label>
     </Flash>
   );
 };
