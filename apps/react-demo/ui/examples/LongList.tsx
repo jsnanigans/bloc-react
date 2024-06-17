@@ -10,16 +10,14 @@ type ListItem = {
   id: string;
 };
 
-class LongListBloc extends Cubit<Record<string, ListItem>> {
-  size = 0;
+class LongListBloc extends Cubit<ListItem[]> {
   constructor() {
-    super({});
-    this.populate();
+    super([]);
   }
 
   populate = () => {
-    const newList: Record<string, ListItem> = {};
-    for (let i = 0; i < 5000; i++) {
+    const newList: ListItem[] = [];
+    for (let i = 0; i < 2000; i++) {
       const id =
         Math.random().toString().replace('0.', '') + Date.now().toString();
       const item = {
@@ -29,24 +27,27 @@ class LongListBloc extends Cubit<Record<string, ListItem>> {
         done: false,
       };
 
-      newList[id] = item;
+      newList.push(item);
     }
 
-    this.size = Object.keys(newList).length;
-    this.emit({ ...newList });
+    this.emit(newList);
   };
 
   toggleDone = (id: string) => {
-    const item = this.state[id];
-    item.done = !item.done;
-    this.patch({ [id]: { ...item } });
+    const newState = this.state.map((item) => {
+      if (item.id === id) {
+        return { ...item, done: !item.done };
+      }
+      return item;
+    });
+    this.emit(newState);
   };
 }
 
-const Item: React.FC<{ id: string }> = ({ id }) => {
+const Item: React.FC<{ index: number }> = ({ index }) => {
   const [all, { toggleDone }] = useBloc(LongListBloc);
 
-  const item = all[id];
+  const item = all[index];
 
   return (
     <tr>
@@ -68,7 +69,7 @@ const Item: React.FC<{ id: string }> = ({ id }) => {
 const LongList = () => {
   const [all, { populate }] = useBloc(LongListBloc, {
     dependencySelector: (all) => {
-      return Object.keys(all);
+      return [all.length];
     },
   });
 
@@ -77,7 +78,7 @@ const LongList = () => {
       <button onClick={populate}>Populate</button>
       <div>
         <ul>
-          <li>List: {Object.keys(all).length}</li>
+          <li>List: {all.length}</li>
         </ul>
       </div>
       <div
@@ -97,8 +98,8 @@ const LongList = () => {
             </tr>
           </thead>
           <tbody>
-            {Object.keys(all).map((id) => (
-              <Item key={id} id={id} />
+            {all.map((item, index) => (
+              <Item key={item.id} index={index} />
             ))}
           </tbody>
         </table>
