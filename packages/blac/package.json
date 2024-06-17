@@ -26,20 +26,21 @@
     "coverage": "vitest run --coverage",
     "pub:alpha": "npm run build && npm publish --tag alpha"
   },
+  "dependencies": {},
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^7.3.1",
-    "@typescript-eslint/parser": "^7.3.1",
+    "@typescript-eslint/eslint-plugin": "^7.13.1",
+    "@typescript-eslint/parser": "^7.13.1",
     "@vitejs/plugin-react-refresh": "^1.3.6",
-    "@vitest/browser": "^1.4.0",
-    "@vitest/coverage-v8": "^1.4.0",
-    "eslint": "^8.57.0",
+    "@vitest/browser": "^1.6.0",
+    "@vitest/coverage-v8": "^1.6.0",
+    "eslint": "^9.5.0",
     "@testing-library/jest-dom": "^6.4.6",
     "@testing-library/react": "^16.0.0",
     "@testing-library/user-event": "^14.5.2",
     "jsdom": "^24.1.0",
-    "prettier": "^3.2.5",
-    "typescript": "^5.4.3",
-    "vite-plugin-dts": "^3.7.3",
+    "prettier": "^3.3.2",
+    "typescript": "^5.4.5",
+    "vite-plugin-dts": "^3.9.1",
     "vitest": "^1.6.0"
   }
 }

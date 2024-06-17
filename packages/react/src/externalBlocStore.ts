@@ -1,4 +1,4 @@
-import { BlocGeneric, BlocState } from 'blac';
+import { BlocGeneric, BlocHookDependencyArrayFn, BlocState } from 'blac';
 
 export interface ExternalStore<
   B extends BlocGeneric<any, any>,
@@ -19,7 +19,7 @@ const externalBlocStore = <
   return {
     subscribe: (listener: (state: S) => void) => {
       const unSub = bloc.addSubscriber({
-        fn: (data) => {
+        fn: () => {
           try {
             listener(bloc.state);
           } catch (e) {

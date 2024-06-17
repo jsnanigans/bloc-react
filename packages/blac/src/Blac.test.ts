@@ -276,7 +276,7 @@ describe('Blac', () => {
     it('should not call `disposeBloc` if the event `LISTENER_REMOVED` is called and the bloc has listeners', () => {
       const blac = new Blac();
       const bloc = new ExampleBloc(undefined);
-      bloc.observer.subscribe(() => {});
+      bloc.observer.subscribe({fn:() => {}});
       const spy = vi.spyOn(blac, 'disposeBloc');
       blac.report(BlacLifecycleEvent.LISTENER_REMOVED, bloc);
       expect(spy).not.toHaveBeenCalled();

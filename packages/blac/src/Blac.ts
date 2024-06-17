@@ -222,7 +222,7 @@ export class Blac {
     blocClass: B,
     options: {
       id?: BlocInstanceId;
-      props?: ConstructorParameters<B>;
+      props?: InferPropsFromGeneric<B>;
       reconnect?: boolean;
     } = {},
   ): InstanceType<B> {

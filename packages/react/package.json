@@ -37,8 +37,8 @@
     "@types/react-dom": "^18.3.0",
     "@vitest/browser": "^1.6.0",
     "jsdom": "^24.1.0",
-    "react": "^18.2.0",
-    "vite-plugin-dts": "^3.7.3",
+    "react": "^18.3.1",
+    "vite-plugin-dts": "^3.9.1",
     "vitest": "^1.6.0"
   }
 }

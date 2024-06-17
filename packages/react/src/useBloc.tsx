@@ -54,9 +54,11 @@ export class UseBlocClass {
         return [newState] as unknown[];
       }
 
-      const used: unknown[] = [];
+      const used: string[] = [];
       for (const key of usedKeys) {
-        used.push(newState[key]);
+        if (key in newState) {
+          used.push(newState[key as keyof typeof newState]);
+        }
       }
       return used;
     };
@@ -77,7 +79,7 @@ export class UseBlocClass {
 
     const resolvedBloc = Blac.getInstance().getBloc(bloc, {
       id: blocId,
-      props,
+      props: props as any,
       reconnect: false,
     }) as InstanceType<B>;
 
