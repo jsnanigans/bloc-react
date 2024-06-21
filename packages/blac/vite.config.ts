@@ -1,5 +1,4 @@
 import { defineConfig } from 'vite';
-import reactRefresh from '@vitejs/plugin-react';
 import dts from 'vite-plugin-dts';
 import { dependencies, devDependencies } from './package.json';
 
@@ -12,12 +11,12 @@ const external = [
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [reactRefresh(), dts()],
+  plugins: [dts()],
   publicDir: 'public',
   build: {
     lib: {
       entry: './src/index.ts', // Specifies the entry point for building the library.
-      name: 'blac-react', // Sets the name of the generated library.
+      name: 'blac-core', // Sets the name of the generated library.
       fileName: (format) => `index.${format}.js`, // Generates the output file name based on the format.
       formats: ['cjs', 'es'], // Specifies the output formats (CommonJS and ES modules).
     },

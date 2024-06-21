@@ -10,8 +10,10 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "experimentalDecorators": true,
+    "resolveJsonModule": true
   },
   "include": ["@testing-library/react"],
-  "exclude": ["publish.ts"]
+  "exclude": ["publish.ts", "dev.ts"]
 }
