@@ -3,8 +3,8 @@
 const packageJsonConfig = {
   main: 'index.cjs.js',
   module: 'index.es.js',
-  typings: 'src/index.d.ts',
-  types: 'src/index.d.ts',
+  typings: 'index.d.ts',
+  types: 'index.d.ts',
 };
 
 const filesToCopy = ['README.md', '.npmignore'];

@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "esnext",
     "module": "esnext",
     "sourceMap": true,
     "outDir": "dist",
@@ -13,5 +13,6 @@
     "experimentalDecorators": true,
     "resolveJsonModule": true
   },
+  "include": ["src"],
   "exclude": ["publish.ts", "dev.ts"]
 }

@@ -1,6 +1,6 @@
 {
   "name": "@blac/react",
-  "version": "0.0.50",
+  "version": "0.0.51",
   "license": "MIT",
   "main": "src/index.ts",
   "module": "src/index.ts",
@@ -49,4 +49,3 @@
     "vitest": "^1.6.0"
   }
 }
-

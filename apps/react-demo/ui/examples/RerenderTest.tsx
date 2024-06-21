@@ -34,13 +34,13 @@ export const Flash: FC<{ children?: ReactNode }> = ({ children }) => {
 
 // Only show the name
 const ShowName: FC = () => {
-  const [{ name }] = useBloc(DemoCubit);
+  const [{ name }] = useBloc(DemoCubit, { inferStateUsage: true });
   return <Flash>Name: {name}</Flash>;
 };
 
 // Input to change the email
 const ChangeName: FC = () => {
-  const [{ name }, { setName }] = useBloc(DemoCubit);
+  const [{ name }, { setName }] = useBloc(DemoCubit, { inferStateUsage: true });
   return (
     <Flash>
       Name: <input type="text" value={name} onChange={setName} />
@@ -50,7 +50,7 @@ const ChangeName: FC = () => {
 
 // Only show the email
 const ShowEmail: FC = () => {
-  const [{ email }] = useBloc(DemoCubit);
+  const [{ email }] = useBloc(DemoCubit, { inferStateUsage: true });
   return <Flash>Email: {email}</Flash>;
 };
 
@@ -67,7 +67,9 @@ const ShowIsEmail: FC = () => {
 
 // Input to change the email
 const ChangeEmail: FC = () => {
-  const [{ email }, { setEmail }] = useBloc(DemoCubit);
+  const [{ email }, { setEmail }] = useBloc(DemoCubit, {
+    inferStateUsage: true,
+  });
   return (
     <Flash>
       Email: <input type="text" value={email} onChange={setEmail} />
@@ -79,7 +81,7 @@ const ChangeEmail: FC = () => {
 const ShowAll: FC = () => {
   const [showEmail, setShowEmail] = React.useState(true);
   const [showName, setShowName] = React.useState(true);
-  const [state] = useBloc(DemoCubit);
+  const [state] = useBloc(DemoCubit, { inferStateUsage: true });
 
   return (
     <Flash>

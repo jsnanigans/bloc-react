@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "esnext",
     "module": "esnext",
     "jsx": "react",
     "sourceMap": true,
@@ -14,6 +14,6 @@
     "experimentalDecorators": true,
     "resolveJsonModule": true
   },
-  "include": ["@testing-library/react"],
+  "include": ["@testing-library/react", "src"],
   "exclude": ["publish.ts", "dev.ts"]
 }

@@ -45,7 +45,9 @@ class LongListBloc extends Cubit<ListItem[]> {
 }
 
 const Item: React.FC<{ index: number }> = ({ index }) => {
-  const [all, { toggleDone }] = useBloc(LongListBloc);
+  const [all, { toggleDone }] = useBloc(LongListBloc, {
+    inferStateUsage: true,
+  });
 
   const item = all[index];
 

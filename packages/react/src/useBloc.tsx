@@ -28,6 +28,7 @@ export interface BlocHookOptions<B extends BlocGeneric<any, any>> {
   id?: string;
   dependencySelector?: BlocHookDependencyArrayFn<B>;
   props?: InferPropsFromGeneric<B>;
+  inferStateUsage?: boolean;
 }
 
 export class UseBlocClass {
@@ -47,21 +48,22 @@ export class UseBlocClass {
     const usedKeys = UseBlocClass.getUsedKeys(rid);
 
     // default options
-    let dependencyArray: BlocHookDependencyArrayFn<InstanceType<B>> = (
-      newState,
-    ) => {
-      if (typeof newState !== 'object') {
-        return [newState] as unknown[];
-      }
+    let dependencyArray: BlocHookDependencyArrayFn<InstanceType<B>> =
+      options?.inferStateUsage
+        ? (newState) => {
+            if (typeof newState !== 'object') {
+              return [newState] as unknown[];
+            }
 
-      const used: string[] = [];
-      for (const key of usedKeys) {
-        if (key in newState) {
-          used.push(newState[key as keyof typeof newState]);
-        }
-      }
-      return used;
-    };
+            const used: string[] = [];
+            for (const key of usedKeys) {
+              if (key in newState) {
+                used.push(newState[key as keyof typeof newState]);
+              }
+            }
+            return used;
+          }
+        : (s) => [s];
     let blocId: BlocInstanceId | undefined;
     let props: ConstructorParameters<BlocConstructor<B>> | undefined;
 
@@ -101,7 +103,7 @@ export class UseBlocClass {
     const currentRenderUsedKeys = new Set<string>();
     const returnState: BlocState<InstanceType<B>> = useMemo(() => {
       try {
-        if (typeof state === 'object') {
+        if (options?.inferStateUsage && typeof state === 'object') {
           return new Proxy(state as any, {
             get(target, prop) {
               usedKeys.add(prop as string);
