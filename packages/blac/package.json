@@ -24,15 +24,18 @@
     "coverage": "vitest run --coverage",
     "pub:alpha": "npm run build && npm publish --tag alpha"
   },
-  "dependencies": {},
+  "dependencies": {
+    "react": "19.0.0-rc-3563387fe3-20240621",
+    "react-dom": "19.0.0-rc-3563387fe3-20240621"
+  },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.4.6",
+    "@testing-library/user-event": "^14.5.2",
     "@typescript-eslint/eslint-plugin": "^7.13.1",
     "@typescript-eslint/parser": "^7.13.1",
     "@vitest/browser": "^1.6.0",
     "@vitest/coverage-v8": "^1.6.0",
     "eslint": "^9.5.0",
-    "@testing-library/jest-dom": "^6.4.6",
-    "@testing-library/user-event": "^14.5.2",
     "jsdom": "^24.1.0",
     "prettier": "^3.3.2",
     "typescript": "^5.4.5",

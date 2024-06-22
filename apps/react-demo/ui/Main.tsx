@@ -31,8 +31,8 @@ import RerenderTest from './examples/RerenderTest';
 import RerenderTestAsText from './examples/RerenderTest.tsx?raw';
 import NoSharedState from './examples/NoSharedState';
 import NoSharedStateText from './examples/NoSharedState.tsx?raw';
-import QueryOtherBlocs from './examples/QueryOtherBlocs';
-import QueryOtherBlocsText from './examples/QueryOtherBlocs.tsx?raw';
+// import QueryOtherBlocs from './examples/QueryOtherBlocs';
+// import QueryOtherBlocsText from './examples/QueryOtherBlocs.tsx?raw';
 
 import CrossDependency from './examples/CrossDependency';
 import CrossDependencyText from './examples/CrossDependency.tsx?raw';
@@ -230,22 +230,22 @@ class DemoPageBloc extends Cubit<MainBlocState> {
       component: <NoSharedState />,
       code: NoSharedStateText,
     },
-    {
-      name: 'Query other Blocs',
-      description: (
-        <>
-          <p>
-            Inside a bloc, you might want to reference other blocs, in this
-            example all circles have their own Bloc instance and know where the
-            others are, they can find each other and will avoid them,
-            `this.blac.findAllBlocs(Cubit) returns all active Cubits of that
-            kind`
-          </p>
-        </>
-      ),
-      component: <QueryOtherBlocs />,
-      code: QueryOtherBlocsText,
-    },
+    // {
+    //   name: 'Query other Blocs',
+    //   description: (
+    //     <>
+    //       <p>
+    //         Inside a bloc, you might want to reference other blocs, in this
+    //         example all circles have their own Bloc instance and know where the
+    //         others are, they can find each other and will avoid them,
+    //         `this.blac.findAllBlocs(Cubit) returns all active Cubits of that
+    //         kind`
+    //       </p>
+    //     </>
+    //   ),
+    //   component: <QueryOtherBlocs />,
+    //   code: QueryOtherBlocsText,
+    // },
   ];
 
   constructor() {

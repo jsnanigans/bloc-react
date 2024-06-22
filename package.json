@@ -9,9 +9,6 @@
   },
   "private": true,
   "dependencies": {
-    "@react-three/fiber": "^8.16.8",
-    "@types/three": "^0.165.0",
-    "three": "^0.165.0",
     "vitest": "^1.6.0"
   },
   "devDependencies": {

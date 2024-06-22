@@ -17,7 +17,7 @@ class LongListBloc extends Cubit<ListItem[]> {
 
   populate = () => {
     const newList: ListItem[] = [];
-    for (let i = 0; i < 2000; i++) {
+    for (let i = 0; i < 20; i++) {
       const id =
         Math.random().toString().replace('0.', '') + Date.now().toString();
       const item = {

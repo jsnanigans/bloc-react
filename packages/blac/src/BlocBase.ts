@@ -20,8 +20,8 @@ export abstract class BlocBase<S = any, P = any> {
   public readonly createdAt = Date.now();
 
   constructor(initialState: S) {
-    this.observer = new BlacObservable();
     this._state = initialState;
+    this.observer = new BlacObservable();
     this.blac.report(BlacLifecycleEvent.BLOC_CREATED, this);
     this.id = this.constructor.name;
     this.isolated = (this.constructor as any).isolated;
