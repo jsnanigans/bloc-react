@@ -17,7 +17,7 @@ class LongListBloc extends Cubit<ListItem[]> {
 
   populate = () => {
     const newList: ListItem[] = [];
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 1000; i++) {
       const id =
         Math.random().toString().replace('0.', '') + Date.now().toString();
       const item = {
@@ -42,10 +42,20 @@ class LongListBloc extends Cubit<ListItem[]> {
     });
     this.emit(newState);
   };
+
+  setName = (id: string, name: string) => {
+    const newState = this.state.map((item) => {
+      if (item.id === id) {
+        return { ...item, name };
+      }
+      return item;
+    });
+    this.emit(newState);
+  };
 }
 
 const Item: React.FC<{ index: number }> = ({ index }) => {
-  const [all, { toggleDone }] = useBloc(LongListBloc, {
+  const [all, { toggleDone, setName }] = useBloc(LongListBloc, {
     inferStateUsage: true,
   });
 
@@ -54,7 +64,14 @@ const Item: React.FC<{ index: number }> = ({ index }) => {
   return (
     <tr>
       <td>
-        <Flash>{item.name}</Flash>
+        <Flash>
+          {item.done ? '✅' : ''}
+          <input
+            type="text"
+            value={item.name}
+            onChange={(e) => setName(item.id, e.target.value)}
+          />
+        </Flash>
       </td>
       <td>{item.date.toLocaleString()}</td>
       <td>

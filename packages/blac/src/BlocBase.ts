@@ -57,7 +57,6 @@ export abstract class BlocBase<S = any, P = any> {
     this.blac.report(BlacLifecycleEvent.BLOC_DISPOSED, this);
     this.isBlacLive = false;
     this.observer.dispose();
-    // this.onDisconnect?.();
   }
 
   handleUnsubscribe = (callback: BlacObserver<S>): void => {

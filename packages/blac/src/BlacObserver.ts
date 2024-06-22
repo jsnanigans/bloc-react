@@ -3,7 +3,7 @@ import { BlocHookDependencyArrayFn } from './types';
 export type BlacObserver<S> = {
   fn: (newState: S, oldState: S, action?: any) => void | Promise<void>;
   dependencyArray?: BlocHookDependencyArrayFn<any>;
-  lastState?: S;
+  lastState?: unknown[];
 };
 
 export class BlacObservable<S> {
@@ -31,7 +31,7 @@ export class BlacObservable<S> {
       let shouldUpdate = false;
 
       if (observer.dependencyArray) {
-        let lastDependencyCheck = observer.lastState ?? [];
+        let lastDependencyCheck = observer.lastState || [];
         const newDependencyCheck = observer.dependencyArray(newState, oldState);
 
         if (lastDependencyCheck.length !== newDependencyCheck.length) {

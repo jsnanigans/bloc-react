@@ -43,18 +43,6 @@ export interface BlocHookOptions<B extends BlocGeneric<any, any>> {
 const defaultDependencySelector: BlocHookDependencyArrayFn<any> = (s) => [s];
 
 export class UseBlocClass {
-  // static ridUsedKeys: Map<string, Set<string>> = new Map();
-  // static getUsedKeys = (rid: string): Set<string> => {
-  //   if (!UseBlocClass.ridUsedKeys.has(rid)) {
-  //     UseBlocClass.ridUsedKeys.set(rid, new Set());
-  //   }
-  //   return UseBlocClass.ridUsedKeys.get(rid) as Set<string>;
-  // };
-
-  // static getKeysString = (rid: string): string => {
-  //   return UseBlocClass.ridUsedKeys.get(rid)?.toString() ?? '';
-  // };
-
   static useBloc<
     B extends BlocConstructor<BlocGeneric>,
     O extends BlocHookOptions<InstanceType<B>>,
@@ -124,8 +112,8 @@ export class UseBlocClass {
         if (inferStateUsage && typeof state === 'object') {
           return new Proxy(state as any, {
             get(target, prop) {
-              usedKeys.current.add(prop);
-              instanceKeys.current.add(prop);
+              usedKeys.current.add(prop as string);
+              instanceKeys.current.add(prop as string);
               return Reflect.get(target, prop);
             },
           });
