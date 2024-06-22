@@ -1,6 +1,6 @@
 {
   "name": "blac",
-  "version": "1.0.25",
+  "version": "1.0.26",
   "license": "MIT",
   "main": "src/index.ts",
   "module": "src/index.ts",
@@ -17,6 +17,7 @@
   "scripts": {
     "build": "vite build",
     "pub:patch": "npm run build && bun publish.ts && cd dist && npm publish",
+    "pub:patch:next": "npm run build && bun publish.ts && cd dist && npm publish --tag next",
     "dev": "bun dev.ts",
     "prettier": "prettier --write ./src",
     "test": "vitest",
@@ -24,10 +25,7 @@
     "coverage": "vitest run --coverage",
     "pub:alpha": "npm run build && npm publish --tag alpha"
   },
-  "dependencies": {
-    "react": "19.0.0-rc-3563387fe3-20240621",
-    "react-dom": "19.0.0-rc-3563387fe3-20240621"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@testing-library/jest-dom": "^6.4.6",
     "@testing-library/user-event": "^14.5.2",

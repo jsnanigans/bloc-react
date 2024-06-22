@@ -4,34 +4,22 @@ import {
   BlocConstructor,
   BlocGeneric,
   BlocHookDependencyArrayFn,
-  BlocInstanceId,
   BlocState,
   InferPropsFromGeneric,
 } from 'blac';
 import {
-  startTransition,
-  useEffect,
   useId,
   useLayoutEffect,
   useMemo,
   useRef,
-  useState,
   useSyncExternalStore,
 } from 'react';
 import externalBlocStore from './externalBlocStore';
-
-// export type BlocHookData<B extends BlocBase<S>, S> = [
-//   value: ValueType<B>,
-//   instance: B,
-// ];
 
 type HookTypes<B extends BlocConstructor<BlocGeneric>> = [
   BlocState<InstanceType<B>>,
   InstanceType<B>,
 ];
-
-// type BlocHookData<B extends BlocBase<S>, S> = [S, InstanceType<B>]; // B is the bloc class, S is the state of the bloc
-// type UseBlocClassResult<B, S> = BlocHookData<B, S>;
 
 export interface BlocHookOptions<B extends BlocGeneric<any, any>> {
   id?: string;
@@ -51,6 +39,7 @@ export class UseBlocClass {
     const usedKeys = useRef<Set<string>>(new Set());
     const instanceKeys = useRef<Set<string>>(new Set());
     const renderInstance = new Set();
+    const shouldClear = useRef(false);
 
     const base = bloc as unknown as BlocBase<B, O['props']>;
     const isIsolated = base.isolated;
@@ -108,6 +97,7 @@ export class UseBlocClass {
             get(target, prop) {
               usedKeys.current.add(prop as string);
               instanceKeys.current.add(prop as string);
+              shouldClear.current = true;
               return Reflect.get(target, prop);
             },
           });
@@ -119,16 +109,15 @@ export class UseBlocClass {
     }, [state, usedKeys, instanceKeys]);
 
     useLayoutEffect(() => {
-      let running = true;
       usedKeys.current = new Set(instanceKeys.current);
-      setTimeout(() => {
-        if (running) {
-          instanceKeys.current.clear();
-        }
-      });
 
       return () => {
-        running = false;
+        setTimeout(() => {
+          if (shouldClear.current) {
+            instanceKeys.current.clear();
+            shouldClear.current = false;
+          }
+        });
       };
     }, [renderInstance]);
 
