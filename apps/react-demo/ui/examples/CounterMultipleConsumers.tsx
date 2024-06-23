@@ -21,6 +21,7 @@ export class CounterMultipleConsumerBloc extends Cubit<CounterMultipleConsumerSt
 
 const ComponentA: FC = () => {
   const [{ count }, { increment }] = useBloc(CounterMultipleConsumerBloc);
+  console.log('ComponentA', count);
   return <button onClick={increment}>A: {count} - Increment</button>;
 };
 
@@ -28,6 +29,7 @@ const CounterMultipleConsumers: FC = () => {
   const [{ showDynamic }, { toggleDynamic }] = useBloc(
     CounterMultipleConsumerBloc,
   );
+  console.log('CounterMultipleConsumers', showDynamic);
   return (
     <div>
       <ComponentA />

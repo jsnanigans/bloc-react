@@ -6,13 +6,13 @@ export abstract class Cubit<S, P = null> extends BlocBase<S, P> {
    * @param state: new state
    **/
   emit(state: S): void {
-    if (state === this.state) {
+    if (Object.is(state, this.state)) {
       return;
     }
 
     const oldState = this.state;
     const newState = state;
-    this.pushState(newState, oldState);
+    this._pushState(newState, oldState);
   }
 
   /**
@@ -28,7 +28,7 @@ export abstract class Cubit<S, P = null> extends BlocBase<S, P> {
     if (!ignoreChangeCheck) {
       for (const key in statePatch) {
         const current = (this.state as any)[key];
-        if (statePatch[key] !== current) {
+        if (!Object.is(statePatch[key], current)) {
           changes = true;
           break;
         }

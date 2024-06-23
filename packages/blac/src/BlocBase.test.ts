@@ -13,7 +13,7 @@ describe('BlocBase', () => {
   describe('constructor', () => {
     it('should create a new observable', () => {
       const instance = new BlocBaseSimple(0);
-      expect(instance.observer).toBeDefined();
+      expect(instance._observer).toBeDefined();
     });
 
     it('should set initial state', () => {
@@ -38,34 +38,34 @@ describe('BlocBase', () => {
 
     it('should set the `id` to the constructors name', () => {
       const instance = new BlocBaseSimple(0);
-      expect(instance.id).toBe('BlocBaseSimple');
+      expect(instance._id).toBe('BlocBaseSimple');
     });
 
     it('should set local prop `isolated` to whatever the static prop was set to when constructed', () => {
       const instance = new BlocBaseSimple(0);
-      expect(instance.isolated).toBe(false);
+      expect(instance._isolated).toBe(false);
       const instance2 = new BlocBaseSimpleIsolated(0);
-      expect(instance2.isolated).toBe(true);
+      expect(instance2._isolated).toBe(true);
     });
   });
 
   describe('updateId', () => {
     it('should update the id', () => {
       const instance = new BlocBaseSimple(0);
-      expect(instance.id).toBe('BlocBaseSimple');
+      expect(instance._id).toBe('BlocBaseSimple');
 
-      instance.updateId('new-id');
-      expect(instance.id).toBe('new-id');
+      instance._updateId('new-id');
+      expect(instance._id).toBe('new-id');
     });
   });
 
   describe('addSubscriber', () => {
     it('should report `listener_added` when a listener is added', () => {
       const instance = new BlocBaseSimple(0);
-      const blac = instance.blac;
+      const blac = instance._blac;
       const blacSpy = vi.spyOn(blac, 'report');
 
-      instance.addSubscriber({fn: () => {}});
+      instance.addSubscriber({ fn: () => {} });
       expect(blacSpy).toHaveBeenNthCalledWith(
         1,
         BlacLifecycleEvent.LISTENER_ADDED,
@@ -75,7 +75,7 @@ describe('BlocBase', () => {
 
     it('should add a subscriber to the observer', () => {
       const instance = new BlocBaseSimple(0);
-      const observer = instance.observer;
+      const observer = instance._observer;
       const observerSpy = vi.spyOn(observer, 'subscribe');
       expect(observerSpy).not.toHaveBeenCalled();
       const callback = { fn: () => {} } as BlacObserver<any>;
@@ -85,7 +85,7 @@ describe('BlocBase', () => {
 
     it('should return the method that unsubscribes the listener', async () => {
       const instance = new BlocBaseSimple(0);
-      const observer = instance.observer;
+      const observer = instance._observer;
       const observerSpy = vi.spyOn(observer, 'unsubscribe');
       expect(observerSpy).not.toHaveBeenCalled();
       const callback = { fn: () => {} };
@@ -101,7 +101,7 @@ describe('BlocBase', () => {
   describe('handleUnsubscribe', () => {
     it('should report `listener_removed` when a listener is removed', () => {
       const instance = new BlocBaseSimple(0);
-      const blac = instance.blac;
+      const blac = instance._blac;
       const blacSpy = vi.spyOn(blac, 'report');
       const callback = { fn: () => {} };
       instance.addSubscriber(callback);
@@ -115,9 +115,9 @@ describe('BlocBase', () => {
   describe('dispose', () => {
     it('should report `bloc_disposed` when disposed', () => {
       const instance = new BlocBaseSimple(0);
-      const blac = instance.blac;
+      const blac = instance._blac;
       const blacSpy = vi.spyOn(blac, 'report');
-      instance.dispose();
+      instance._dispose();
       expect(blacSpy).toHaveBeenCalledWith(
         BlacLifecycleEvent.BLOC_DISPOSED,
         instance,
@@ -129,7 +129,7 @@ describe('BlocBase', () => {
     describe('name', () => {
       it('should return the name of the constructor', () => {
         const instance = new BlocBaseSimple(0);
-        expect(instance.name).toBe('BlocBaseSimple');
+        expect(instance._name).toBe('BlocBaseSimple');
       });
     });
 
@@ -143,7 +143,7 @@ describe('BlocBase', () => {
     describe('blac', () => {
       it('should be the same instance as the global Blac instance', () => {
         const instance = new BlocBaseSimple(0);
-        const blac = instance.blac;
+        const blac = instance._blac;
         const globalBlac = Blac.getInstance();
         expect(blac).toBe(globalBlac);
       });

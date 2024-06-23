@@ -42,8 +42,8 @@ describe('Blac', () => {
     it('should return a string with the bloc name and id', () => {
       const blac = new Blac();
       const bloc = new ExampleBloc(undefined);
-      const key = blac.createBlocInstanceMapKey(bloc.name, bloc.id);
-      expect(key).toBe(`${bloc.name}:${bloc.id}`);
+      const key = blac.createBlocInstanceMapKey(bloc._name, bloc._id);
+      expect(key).toBe(`${bloc._name}:${bloc._id}`);
     });
   });
 
@@ -51,7 +51,7 @@ describe('Blac', () => {
     it('should add the bloc to the blocInstanceMap', () => {
       const blac = new Blac();
       const bloc = new ExampleBloc(undefined);
-      const key = blac.createBlocInstanceMapKey(bloc.name, bloc.id);
+      const key = blac.createBlocInstanceMapKey(bloc._name, bloc._id);
 
       blac.registerBlocInstance(bloc);
       expect(blac.blocInstanceMap.get(key)).toBe(bloc);
@@ -62,7 +62,7 @@ describe('Blac', () => {
     it('should remove the bloc from the blocInstanceMap', () => {
       const blac = new Blac();
       const bloc = new ExampleBloc(undefined);
-      const key = blac.createBlocInstanceMapKey(bloc.name, bloc.id);
+      const key = blac.createBlocInstanceMapKey(bloc._name, bloc._id);
       blac.registerBlocInstance(bloc);
       expect(blac.blocInstanceMap.get(key)).toBe(bloc);
 
@@ -77,7 +77,7 @@ describe('Blac', () => {
       const blac = new Blac();
       const bloc = new ExampleBloc(undefined);
       blac.registerBlocInstance(bloc);
-      const result = blac.findRegisteredBlocInstance(ExampleBloc, bloc.id);
+      const result = blac.findRegisteredBlocInstance(ExampleBloc, bloc._id);
       expect(result).toBe(bloc);
     });
 
@@ -118,7 +118,7 @@ describe('Blac', () => {
       const blac = new Blac();
       const bloc = new ExampleBloc(undefined);
       blac.registerIsolatedBlocInstance(bloc);
-      const result = blac.findIsolatedBlocInstance(ExampleBloc, bloc.id);
+      const result = blac.findIsolatedBlocInstance(ExampleBloc, bloc._id);
       expect(result).toBe(bloc);
     });
 
@@ -141,13 +141,13 @@ describe('Blac', () => {
     it('should set the bloc id', () => {
       const blac = new Blac();
       const bloc = blac.createNewBlocInstance(ExampleBloc, 'foo');
-      expect(bloc.id).toBe('foo');
+      expect(bloc._id).toBe('foo');
     });
 
     it('should register the bloc', () => {
       const blac = new Blac();
       const bloc = blac.createNewBlocInstance(ExampleBloc, 'foo');
-      const key = blac.createBlocInstanceMapKey(bloc.name, bloc.id);
+      const key = blac.createBlocInstanceMapKey(bloc._name, bloc._id);
       expect(blac.blocInstanceMap.get(key)).toBe(bloc);
     });
 
@@ -210,7 +210,7 @@ describe('Blac', () => {
       blac.createNewBlocInstance(ExampleBloc, 'foo2');
       blac.createNewBlocInstance(ExampleBloc, 'foo3');
       const result = blac.getAllBlocs(ExampleBloc);
-      const resultIdMap = result.map((b) => b.id);
+      const resultIdMap = result.map((b) => b._id);
       expect(resultIdMap).toEqual(['foo1', 'foo2', 'foo3']);
     });
 
@@ -222,7 +222,7 @@ describe('Blac', () => {
       const result = blac.getAllBlocs(ExampleBlocIsolated, {
         searchIsolated: true,
       });
-      const idMap = result.map((b) => b.id);
+      const idMap = result.map((b) => b._id);
       expect(idMap).toEqual(['foo1', 'foo2', 'foo3']);
     });
   });
@@ -276,7 +276,7 @@ describe('Blac', () => {
     it('should not call `disposeBloc` if the event `LISTENER_REMOVED` is called and the bloc has listeners', () => {
       const blac = new Blac();
       const bloc = new ExampleBloc(undefined);
-      bloc.observer.subscribe({fn:() => {}});
+      bloc._observer.subscribe({ fn: () => {} });
       const spy = vi.spyOn(blac, 'disposeBloc');
       blac.report(BlacLifecycleEvent.LISTENER_REMOVED, bloc);
       expect(spy).not.toHaveBeenCalled();

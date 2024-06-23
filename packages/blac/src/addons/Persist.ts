@@ -70,17 +70,17 @@ export function Persist(
   };
 
   const onInit: BlacAddonInit = (e: BlocBase<any>) => {
-    const id = keyName ?? e.id;
+    const id = keyName ?? e._id;
 
     const value = getFromLocalStorage(id);
     if (typeof value !== undefined) {
-      e.pushState(value, null);
+      e._pushState(value, null);
     }
   };
 
   let currentCachedValue = '';
   const onEmit: BlacAddonEmit = ({ newState, cubit }) => {
-    const id = keyName ?? cubit.id;
+    const id = keyName ?? cubit._id;
 
     const newValue = JSON.stringify({ v: newState });
 

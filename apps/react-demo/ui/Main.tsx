@@ -1,4 +1,4 @@
-import { Cubit } from 'blac';
+import { Blac, Cubit } from 'blac';
 import React, { FC } from 'react';
 import { useBloc } from '@blac/react';
 
@@ -366,5 +366,7 @@ const Main: FC = () => {
     </main>
   );
 };
+
+window.Blac = Blac;
 
 export default Main;

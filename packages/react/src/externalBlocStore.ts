@@ -15,13 +15,14 @@ const externalBlocStore = <
 >(
   bloc: B,
   dependencyArray: BlocHookDependencyArrayFn<InstanceType<any>>,
+  rid: string,
 ): ExternalStore<B, S> => {
   return {
     subscribe: (listener: (state: S) => void) => {
-      const unSub = bloc.addSubscriber({
+      const unSub = bloc._observer.subscribe({
         fn: () => {
           try {
-            listener(bloc.state);
+            listener(Object.freeze(bloc.state));
           } catch (e) {
             console.error({
               e,
@@ -31,14 +32,15 @@ const externalBlocStore = <
           }
         },
         dependencyArray,
+        id: rid,
       });
 
       return () => {
         unSub();
       };
     },
-    getSnapshot: (): S => bloc.state,
-    getServerSnapshot: (): S => bloc.state,
+    getSnapshot: (): S => Object.freeze(bloc.state),
+    getServerSnapshot: (): S => Object.freeze(bloc.state),
   };
 };
 

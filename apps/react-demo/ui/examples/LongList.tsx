@@ -15,6 +15,8 @@ class LongListBloc extends Cubit<ListItem[]> {
     super([]);
   }
 
+  clear = () => this.emit([]);
+
   populate = () => {
     const newList: ListItem[] = [];
     for (let i = 0; i < 1000; i++) {
@@ -55,9 +57,7 @@ class LongListBloc extends Cubit<ListItem[]> {
 }
 
 const Item: React.FC<{ index: number }> = ({ index }) => {
-  const [all, { toggleDone, setName }] = useBloc(LongListBloc, {
-    inferStateUsage: true,
-  });
+  const [all, { toggleDone, setName }] = useBloc(LongListBloc);
 
   const item = all[index];
 
@@ -86,7 +86,7 @@ const Item: React.FC<{ index: number }> = ({ index }) => {
 };
 
 const LongList = () => {
-  const [all, { populate }] = useBloc(LongListBloc, {
+  const [all, { populate, clear }] = useBloc(LongListBloc, {
     dependencySelector: (all) => {
       return [all.length];
     },
@@ -95,6 +95,7 @@ const LongList = () => {
   return (
     <div>
       <button onClick={populate}>Populate</button>
+      <button onClick={clear}>Clear</button>
       <div>
         <ul>
           <li>List: {all.length}</li>

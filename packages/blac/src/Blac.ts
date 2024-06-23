@@ -13,17 +13,19 @@ export interface BlacConfig {
 
 export enum BlacLifecycleEvent {
   BLOC_DISPOSED = 'BLOC_DISPOSED',
+  BLOC_CREATED = 'BLOC_CREATED',
+  BLOC_RESURRECTED = 'BLOC_RESURRECTED',
   LISTENER_REMOVED = 'LISTENER_REMOVED',
   LISTENER_ADDED = 'LISTENER_ADDED',
   STATE_CHANGED = 'STATE_CHANGED',
-  BLOC_CREATED = 'BLOC_CREATED',
 }
 
 export interface EventParams {
   [BlacLifecycleEvent.BLOC_DISPOSED]: undefined;
+  [BlacLifecycleEvent.BLOC_CREATED]: undefined;
+  [BlacLifecycleEvent.BLOC_RESURRECTED]: undefined;
   [BlacLifecycleEvent.LISTENER_REMOVED]: undefined;
   [BlacLifecycleEvent.LISTENER_ADDED]: undefined;
-  [BlacLifecycleEvent.BLOC_CREATED]: undefined;
   [BlacLifecycleEvent.STATE_CHANGED]: {
     newState: any;
     oldState: any;
@@ -45,8 +47,6 @@ export class Blac {
     if (Blac.instance && !__unsafe_ignore_singleton) {
       return Blac.instance;
     }
-
-    this.log('Create new Blac instance');
     Blac.instance = this;
   }
 
@@ -55,7 +55,7 @@ export class Blac {
 
     const allBlocs = Array.from(this.blocInstanceMap.values());
     allBlocs.forEach((bloc) => {
-      bloc.onEvent?.(event);
+      bloc._onEvent?.(event);
     });
   };
 
@@ -102,12 +102,20 @@ export class Blac {
   ) => {
     const base = bloc.constructor as unknown as BlocBaseAbstract;
 
+    this.log(event, bloc, params);
+
     switch (event) {
       case BlacLifecycleEvent.BLOC_DISPOSED:
         this.disposeBloc(bloc);
         break;
       case BlacLifecycleEvent.LISTENER_REMOVED:
-        if (bloc.observer.size === 0 && !base.keepAlive) this.disposeBloc(bloc);
+        if (bloc._observer.size === 0 && !base.keepAlive) void bloc._dispose();
+        break;
+      case BlacLifecycleEvent.LISTENER_ADDED:
+        if (bloc._observer.size <= 1) bloc._resurrect();
+        break;
+      case BlacLifecycleEvent.BLOC_RESURRECTED:
+        this.resurrectBloc(bloc);
         break;
     }
 
@@ -116,16 +124,21 @@ export class Blac {
 
   disposeBloc = (bloc: BlocBase<any, any>): void => {
     const base = bloc.constructor as unknown as BlocBaseAbstract;
-    this.log('Dispose bloc', {
-      bloc,
-      blocName: bloc.name,
-      blocId: bloc.id,
-      isolated: base.isolated,
-    });
+    bloc._isBlacLive = false;
     if (base.isolated) {
       this.unregisterIsolatedBlocInstance(bloc);
     } else {
       this.unregisterBlocInstance(bloc);
+    }
+  };
+
+  resurrectBloc = (bloc: BlocBase<any, any>): void => {
+    const base = bloc.constructor as unknown as BlocBaseAbstract;
+    bloc._isBlacLive = true;
+    if (base.isolated) {
+      this.registerIsolatedBlocInstance(bloc);
+    } else {
+      this.registerBlocInstance(bloc);
     }
   };
 
@@ -134,14 +147,12 @@ export class Blac {
   }
 
   unregisterBlocInstance(bloc: BlocBase<any, any>): void {
-    const key = this.createBlocInstanceMapKey(bloc.name, bloc.id);
-    this.log('Unregister bloc', key);
+    const key = this.createBlocInstanceMapKey(bloc._name, bloc._id);
     this.blocInstanceMap.delete(key);
   }
 
   registerBlocInstance(bloc: BlocBase<any, any>): void {
-    const key = this.createBlocInstanceMapKey(bloc.name, bloc.id);
-    this.log('Register bloc', key);
+    const key = this.createBlocInstanceMapKey(bloc._name, bloc._id);
     this.blocInstanceMap.set(key, bloc);
   }
 
@@ -159,7 +170,6 @@ export class Blac {
   registerIsolatedBlocInstance(bloc: BlocBase<any, any>): void {
     const blocClass = bloc.constructor;
     const blocs = this.isolatedBlocMap.get(blocClass);
-    this.log('Register isolated bloc', blocClass.name, bloc.id);
     if (blocs) {
       blocs.push(bloc);
     } else {
@@ -170,9 +180,8 @@ export class Blac {
   unregisterIsolatedBlocInstance(bloc: BlocBase<any, any>): void {
     const blocClass = bloc.constructor;
     const blocs = this.isolatedBlocMap.get(blocClass);
-    this.log('Unregister isolated bloc', blocClass.name, bloc.id);
     if (blocs) {
-      const index = blocs.findIndex((b) => b.id === bloc.id);
+      const index = blocs.findIndex((b) => b._id === bloc._id);
       blocs.splice(index, 1);
 
       if (blocs.length === 0) {
@@ -187,7 +196,9 @@ export class Blac {
   ): InstanceType<BlocConstructor<B>> | undefined {
     const blocs = this.isolatedBlocMap.get(blocClass);
     if (blocs) {
-      return blocs.find((b) => b.id === id) as InstanceType<BlocConstructor<B>>;
+      return blocs.find((b) => b._id === id) as InstanceType<
+        BlocConstructor<B>
+      >;
     }
     return undefined;
   }
@@ -200,14 +211,7 @@ export class Blac {
     const base = blocClass as unknown as BlocBaseAbstract;
 
     const newBloc = new blocClass(props as never);
-    newBloc.updateId(id);
-
-    this.log('Create new bloc instance', {
-      blocClass,
-      id,
-      props,
-      newBloc,
-    });
+    newBloc._updateId(id);
 
     if (base.isolated) {
       this.registerIsolatedBlocInstance(newBloc);

@@ -1,6 +1,7 @@
 import {
   Blac,
   BlocBase,
+  BlocBaseAbstract,
   BlocConstructor,
   BlocGeneric,
   BlocHookDependencyArrayFn,
@@ -8,6 +9,7 @@ import {
   InferPropsFromGeneric,
 } from 'blac';
 import {
+  useEffect,
   useId,
   useLayoutEffect,
   useMemo,
@@ -41,7 +43,7 @@ export class UseBlocClass {
     const renderInstance = new Set();
     const shouldClear = useRef(false);
 
-    const base = bloc as unknown as BlocBase<B, O['props']>;
+    const base = bloc as unknown as BlocBaseAbstract;
     const isIsolated = base.isolated;
     if (isIsolated) {
       blocId = rid;
@@ -80,8 +82,8 @@ export class UseBlocClass {
     };
 
     const { subscribe, getSnapshot, getServerSnapshot } = useMemo(
-      () => externalBlocStore(resolvedBloc, dependencyArray),
-      [resolvedBloc.createdAt],
+      () => externalBlocStore(resolvedBloc, dependencyArray, rid),
+      [resolvedBloc._createdAt],
     );
 
     const state = useSyncExternalStore<BlocState<InstanceType<B>>>(

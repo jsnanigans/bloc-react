@@ -1,12 +1,22 @@
+import { Blac, BlacLifecycleEvent } from './Blac';
+import { BlocBase } from './BlocBase';
 import { BlocHookDependencyArrayFn } from './types';
 
 export type BlacObserver<S> = {
   fn: (newState: S, oldState: S, action?: any) => void | Promise<void>;
   dependencyArray?: BlocHookDependencyArrayFn<any>;
   lastState?: unknown[];
+  id: string;
+  passive?: boolean;
 };
 
 export class BlacObservable<S> {
+  bloc: BlocBase<any, any>;
+
+  constructor(bloc: BlocBase<any, any>) {
+    this.bloc = bloc;
+  }
+
   private _observers = new Set<BlacObserver<S>>();
 
   get size(): number {
@@ -19,11 +29,13 @@ export class BlacObservable<S> {
 
   subscribe(observer: BlacObserver<S>): () => void {
     this._observers.add(observer);
+    Blac.instance.report(BlacLifecycleEvent.LISTENER_ADDED, this.bloc);
     return () => this.unsubscribe(observer);
   }
 
   unsubscribe(observer: BlacObserver<S>) {
     this._observers.delete(observer);
+    Blac.instance.report(BlacLifecycleEvent.LISTENER_REMOVED, this.bloc);
   }
 
   notify(newState: S, oldState: S, action?: any) {

@@ -1,12 +1,12 @@
-import type { FC } from 'react';
-import React, { useCallback } from 'react';
-import { Bloc, Cubit } from 'blac';
 import { useBloc } from '@blac/react';
+import { Bloc, Cubit } from 'blac';
+import type { FC } from 'react';
+import React from 'react';
 
 class TodoListBloc extends Cubit<string[]> {
   constructor() {
     super([]);
-    const name = this.blac.getBloc(UserBloc).state;
+    const name = this._blac.getBloc(UserBloc).state;
     this.emit([
       `${name}: Learn about BLoC pattern`,
       `${name}: Learn about Cubit pattern`,
@@ -14,7 +14,7 @@ class TodoListBloc extends Cubit<string[]> {
   }
 
   addTodo = (text: string) => {
-    const name = this.blac.getBloc(UserBloc).state;
+    const name = this._blac.getBloc(UserBloc).state;
     this.emit([...this.state, `${name}: ${text}`]);
   };
 }

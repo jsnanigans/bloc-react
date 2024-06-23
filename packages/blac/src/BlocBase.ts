@@ -1,8 +1,7 @@
 import { Blac, BlacLifecycleEvent } from './Blac';
 import BlacEvent from './BlacEvent';
-import { BlacObservable, BlacObserver } from './BlacObserver';
+import { BlacObservable } from './BlacObserver';
 import BlacAddon from './addons/BlacAddon';
-import { BlocHookDependencyArrayFn } from './types';
 
 export type BlocInstanceId = string | number | undefined;
 
@@ -11,22 +10,22 @@ export abstract class BlocBase<S = any, P = any> {
   static keepAlive = false;
   static isBlacClass = true;
   static addons?: BlacAddon[];
-  public addons?: BlacAddon[];
-  public isolated = false;
-  public isBlacLive = true;
-  public observer: BlacObservable<any>;
-  public blac = Blac.getInstance();
-  public id: BlocInstanceId;
-  public readonly createdAt = Date.now();
+  public _addons?: BlacAddon[];
+  public _isolated = false;
+  public _isBlacLive = true;
+  public _observer: BlacObservable<any>;
+  public _blac = Blac.getInstance();
+  public _id: BlocInstanceId;
+  public readonly _createdAt = Date.now();
 
   constructor(initialState: S) {
     this._state = initialState;
-    this.observer = new BlacObservable();
-    this.blac.report(BlacLifecycleEvent.BLOC_CREATED, this);
-    this.id = this.constructor.name;
-    this.isolated = (this.constructor as any).isolated;
-    this.addons = (this.constructor as any).addons;
-    this.connectAddons();
+    this._observer = new BlacObservable(this);
+    this._blac.report(BlacLifecycleEvent.BLOC_CREATED, this);
+    this._id = this.constructor.name;
+    this._isolated = (this.constructor as any).isolated;
+    this._addons = (this.constructor as any).addons;
+    this._connectAddons();
   }
 
   public _state: S;
@@ -37,43 +36,33 @@ export abstract class BlocBase<S = any, P = any> {
     return this._state;
   }
 
-  get name() {
+  get _name() {
     return this.constructor.name;
   }
 
-  updateId = (id?: BlocInstanceId) => {
-    const originalId = this.id;
+  _updateId = (id?: BlocInstanceId) => {
+    const originalId = this._id;
     if (!id || id === originalId) return;
-    this.id = id;
+    this._id = id;
   };
 
-  addSubscriber = (observerItem: BlacObserver<S>): (() => void) => {
-    this.blac.report(BlacLifecycleEvent.LISTENER_ADDED, this);
-    this.observer.subscribe(observerItem);
-    return () => this.handleUnsubscribe(observerItem);
-  };
-
-  dispose() {
-    this.blac.report(BlacLifecycleEvent.BLOC_DISPOSED, this);
-    this.isBlacLive = false;
-    this.observer.dispose();
+  async _dispose() {
+    this._blac.report(BlacLifecycleEvent.BLOC_DISPOSED, this);
+    this._observer.dispose();
   }
 
-  handleUnsubscribe = (callback: BlacObserver<S>): void => {
-    setTimeout(() => {
-      this.observer.unsubscribe(callback);
-      this.blac.report(BlacLifecycleEvent.LISTENER_REMOVED, this);
-    }, 0);
-  };
+  _resurrect() {
+    this._blac.report(BlacLifecycleEvent.BLOC_RESURRECTED, this);
+  }
 
-  connectAddons = () => {
-    const { addons } = this;
+  _connectAddons = () => {
+    const { _addons: addons } = this;
 
     if (!addons) return;
 
     for (const addon of addons) {
       if (addon.onEmit) {
-        this.observer.subscribe({
+        this._observer.subscribe({
           fn: (newState, oldState) => {
             addon.onEmit?.({
               newState,
@@ -81,6 +70,8 @@ export abstract class BlocBase<S = any, P = any> {
               cubit: this,
             });
           },
+          passive: true,
+          id: addon.name,
         });
       }
       if (addon.onInit) {
@@ -89,16 +80,16 @@ export abstract class BlocBase<S = any, P = any> {
     }
   };
 
-  pushState = (newState: S, oldState: S, action?: any): void => {
+  _pushState = (newState: S, oldState: S, action?: any): void => {
     this._state = newState;
     this._oldState = oldState;
-    this.observer.notify(newState, oldState, action);
+    this._observer.notify(newState, oldState, action);
 
-    this.blac.report(BlacLifecycleEvent.STATE_CHANGED, this, {
+    this._blac.report(BlacLifecycleEvent.STATE_CHANGED, this, {
       newState,
       oldState,
     });
   };
 
-  onEvent(event: BlacEvent<any>): void {}
+  _onEvent(event: BlacEvent<any>): void {}
 }

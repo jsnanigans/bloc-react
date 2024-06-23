@@ -16,6 +16,6 @@ export abstract class Bloc<S, A, P = any> extends BlocBase<S, P> {
   add = (action: A) => {
     const oldState = this.state;
     const newState = this.reducer(action, this.state);
-    this.pushState(newState, oldState, action);
+    this._pushState(newState, oldState, action);
   };
 }
