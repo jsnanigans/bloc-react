@@ -109,9 +109,7 @@ export class Blac {
         this.disposeBloc(bloc);
         break;
       case BlacLifecycleEvent.LISTENER_REMOVED:
-        requestIdleCallback(() => {
-          if (bloc._observer.size === 0 && !base.keepAlive) bloc._dispose();
-        });
+        if (bloc._observer.size === 0 && !base.keepAlive) bloc._dispose();
         break;
       case BlacLifecycleEvent.LISTENER_ADDED:
         if (bloc._observer.size <= 1) bloc._resurrect();
