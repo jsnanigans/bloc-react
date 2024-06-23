@@ -65,7 +65,7 @@ describe('BlocBase', () => {
       const blac = instance._blac;
       const blacSpy = vi.spyOn(blac, 'report');
 
-      instance.addSubscriber({ fn: () => {} });
+      instance._observer.subscribe({ fn: () => {}, id: 'foo' });
       expect(blacSpy).toHaveBeenNthCalledWith(
         1,
         BlacLifecycleEvent.LISTENER_ADDED,
@@ -78,8 +78,8 @@ describe('BlocBase', () => {
       const observer = instance._observer;
       const observerSpy = vi.spyOn(observer, 'subscribe');
       expect(observerSpy).not.toHaveBeenCalled();
-      const callback = { fn: () => {} } as BlacObserver<any>;
-      instance.addSubscriber(callback);
+      const callback = { fn: () => {}, id: 'foo' } as BlacObserver<any>;
+      instance._observer.subscribe(callback);
       expect(observerSpy).toHaveBeenCalledWith(callback);
     });
 
@@ -88,8 +88,8 @@ describe('BlocBase', () => {
       const observer = instance._observer;
       const observerSpy = vi.spyOn(observer, 'unsubscribe');
       expect(observerSpy).not.toHaveBeenCalled();
-      const callback = { fn: () => {} };
-      const unsubscribe = instance.addSubscriber(callback);
+      const callback = { fn: () => {}, id: 'foo' };
+      const unsubscribe = instance._observer.subscribe(callback);
       expect(observerSpy).not.toHaveBeenCalled();
 
       unsubscribe();
@@ -103,8 +103,8 @@ describe('BlocBase', () => {
       const instance = new BlocBaseSimple(0);
       const blac = instance._blac;
       const blacSpy = vi.spyOn(blac, 'report');
-      const callback = { fn: () => {} };
-      instance.addSubscriber(callback);
+      const callback = { fn: () => {}, id: 'foo' };
+      instance._observer.subscribe(callback);
       expect(blacSpy).toHaveBeenCalledWith(
         BlacLifecycleEvent.LISTENER_ADDED,
         instance,
