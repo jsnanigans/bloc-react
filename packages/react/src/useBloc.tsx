@@ -96,11 +96,11 @@ export class UseBlocClass {
       try {
         if (typeof state === 'object') {
           return new Proxy(state as any, {
-            get(target, prop) {
+            get(_, prop) {
               usedKeys.current.add(prop as string);
               instanceKeys.current.add(prop as string);
               shouldClear.current = true;
-              return Reflect.get(target, prop);
+              return state[prop as keyof typeof state];
             },
           });
         }

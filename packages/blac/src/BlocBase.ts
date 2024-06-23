@@ -46,7 +46,7 @@ export abstract class BlocBase<S = any, P = any> {
     this._id = id;
   };
 
-  async _dispose() {
+  _dispose() {
     this._blac.report(BlacLifecycleEvent.BLOC_DISPOSED, this);
     this._observer.dispose();
   }

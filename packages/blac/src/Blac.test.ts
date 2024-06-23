@@ -181,7 +181,7 @@ describe('Blac', () => {
     it('should return a new instance and call `dispose` on the bloc if the option `reconnect` is true', () => {
       const blac = new Blac();
       const bloc = new ExampleBloc(undefined);
-      const disposeSpy = vi.spyOn(bloc, 'dispose');
+      const disposeSpy = vi.spyOn(bloc, '_dispose');
       const createSpy = vi.spyOn(blac, 'createNewBlocInstance');
       blac.registerBlocInstance(bloc);
       const result = blac.getBloc(ExampleBloc, { reconnect: true });
@@ -276,7 +276,7 @@ describe('Blac', () => {
     it('should not call `disposeBloc` if the event `LISTENER_REMOVED` is called and the bloc has listeners', () => {
       const blac = new Blac();
       const bloc = new ExampleBloc(undefined);
-      bloc._observer.subscribe({ fn: () => {} });
+      bloc._observer.subscribe({ fn: () => {}, id: 'foo' });
       const spy = vi.spyOn(blac, 'disposeBloc');
       blac.report(BlacLifecycleEvent.LISTENER_REMOVED, bloc);
       expect(spy).not.toHaveBeenCalled();
