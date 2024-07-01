@@ -207,10 +207,13 @@ export class Blac {
     blocClass: BlocConstructor<B>,
     id: BlocInstanceId,
     props?: InferPropsFromGeneric<B>,
+    instanceRef?: any,
   ): InstanceType<BlocConstructor<B>> {
     const base = blocClass as unknown as BlocBaseAbstract;
 
     const newBloc = new blocClass(props as never);
+    newBloc._instanceRef = instanceRef;
+    newBloc.props = props || null;
     newBloc._updateId(id);
 
     if (base.isolated) {
@@ -228,6 +231,7 @@ export class Blac {
       id?: BlocInstanceId;
       props?: InferPropsFromGeneric<B>;
       reconnect?: boolean;
+      instanceRef?: any;
     } = {},
   ): InstanceType<B> {
     const isIsolated = (blocClass as InstanceType<B>).isolated;
@@ -246,7 +250,12 @@ export class Blac {
         return registered;
       }
     }
-    return this.createNewBlocInstance(blocClass, id, options.props);
+    return this.createNewBlocInstance(
+      blocClass,
+      id,
+      options.props,
+      options.instanceRef,
+    );
   }
 
   getAllBlocs = <B extends BlocBase<any, any>>(

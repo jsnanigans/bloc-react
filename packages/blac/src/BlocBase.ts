@@ -16,6 +16,7 @@ export abstract class BlocBase<S = any, P = any> {
   public _observer: BlacObservable<any>;
   public _blac = Blac.getInstance();
   public _id: BlocInstanceId;
+  public _instanceRef: any;
   public readonly _createdAt = Date.now();
 
   constructor(initialState: S) {
@@ -30,7 +31,7 @@ export abstract class BlocBase<S = any, P = any> {
 
   public _state: S;
   public _oldState: S | undefined;
-  public _props: P = null as P;
+  public props: P | null = null;
 
   get state(): S {
     return this._state;

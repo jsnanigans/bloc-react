@@ -1,8 +1,8 @@
 import { useBloc } from '@blac/react';
 import { Cubit } from 'blac';
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 
-type PropsBlocProps = { name: string };
+type PropsBlocProps = { name: string; onChange: () => void };
 
 class PropsBloc extends Cubit<{ display: string }, PropsBlocProps> {
   // props are passed to the constructor, if the bloc is not isolated the state is shared and so the constructor is called only once for the first
@@ -13,6 +13,8 @@ class PropsBloc extends Cubit<{ display: string }, PropsBlocProps> {
 
   jumbleLetters = () => {
     let newName = this.state.display;
+
+    this.props?.onChange();
 
     while (newName === this.state.display) {
       const rndOrder = this.state.display
@@ -29,12 +31,31 @@ class PropsBloc extends Cubit<{ display: string }, PropsBlocProps> {
   };
 }
 
-const Props: FC<PropsBlocProps> = (props) => {
+const Props: FC<{ name: string }> = (props) => {
+  const [time, setTime] = React.useState(new Date());
+
   const [{ display }, { jumbleLetters }] = useBloc(PropsBloc, {
-    props,
+    props: {
+      name: props.name,
+      onChange: () => {
+        console.log('state changed', time);
+      },
+    },
   });
 
-  return <button onClick={jumbleLetters}>Name: {display}</button>;
+  const handleClick = () => {
+    setTime(new Date());
+  };
+
+  useEffect(() => {
+    jumbleLetters();
+  }, [time]);
+
+  return (
+    <button onClick={handleClick}>
+      Name: {display}. {time.toLocaleTimeString()}
+    </button>
+  );
 };
 
 function PropsExample() {
