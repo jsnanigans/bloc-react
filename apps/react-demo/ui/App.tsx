@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import Main from './Main';
 import { Blac } from 'blac';
 
-// Blac.enableLog = true;
+Blac.enableLog = true;
 
 const App: FC = () => {
   return (

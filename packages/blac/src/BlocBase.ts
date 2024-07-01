@@ -16,7 +16,7 @@ export abstract class BlocBase<S = any, P = any> {
   public _observer: BlacObservable<any>;
   public _blac = Blac.getInstance();
   public _id: BlocInstanceId;
-  public _instanceRef: any;
+  public _instanceRef?: string;
   public readonly _createdAt = Date.now();
 
   constructor(initialState: S) {

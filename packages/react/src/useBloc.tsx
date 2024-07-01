@@ -38,7 +38,6 @@ export class UseBlocClass {
   >(bloc: B, options?: O): HookTypes<B> {
     let { dependencySelector, id: blocId, props } = options ?? {};
     const rid = useId();
-    const instanceRef = useRef(new Date());
     const usedKeys = useRef<Set<string>>(new Set());
     const instanceKeys = useRef<Set<string>>(new Set());
     const renderInstance = new Set();
@@ -54,14 +53,15 @@ export class UseBlocClass {
       id: blocId,
       props: props as any,
       reconnect: false,
-      instanceRef: instanceRef.current,
+      instanceRef: rid,
     }) as InstanceType<B>;
 
     if (!resolvedBloc) {
       throw new Error(`useBloc: could not resolve: ${bloc.name || bloc}`);
     }
 
-    if (instanceRef.current === resolvedBloc._instanceRef && options?.props) {
+    const isMainInstance = rid === resolvedBloc._instanceRef;
+    if (isMainInstance && options?.props) {
       resolvedBloc.props = options.props;
     }
 

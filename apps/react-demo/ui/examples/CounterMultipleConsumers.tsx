@@ -7,7 +7,10 @@ interface CounterMultipleConsumerState {
   showDynamic: boolean;
 }
 
-export class CounterMultipleConsumerBloc extends Cubit<CounterMultipleConsumerState> {
+export class CounterMultipleConsumerBloc extends Cubit<
+  CounterMultipleConsumerState,
+  { id: string }
+> {
   constructor() {
     super({
       count: 0,
@@ -15,21 +18,26 @@ export class CounterMultipleConsumerBloc extends Cubit<CounterMultipleConsumerSt
     });
   }
 
-  increment = () => this.patch({ count: this.state.count + 1 });
-  toggleDynamic = () => this.patch({ showDynamic: !this.state.showDynamic });
+  increment = () => {
+    this.patch({ count: this.state.count + 1 });
+  };
+  toggleDynamic = () => {
+    this.patch({ showDynamic: !this.state.showDynamic });
+  };
 }
 
 const ComponentA: FC = () => {
   const [{ count }, { increment }] = useBloc(CounterMultipleConsumerBloc);
-  console.log('ComponentA', count);
   return <button onClick={increment}>A: {count} - Increment</button>;
 };
 
 const CounterMultipleConsumers: FC = () => {
   const [{ showDynamic }, { toggleDynamic }] = useBloc(
     CounterMultipleConsumerBloc,
+    {
+      props: { id: `CounterMultipleConsumers` },
+    },
   );
-  console.log('CounterMultipleConsumers', showDynamic);
   return (
     <div>
       <ComponentA />

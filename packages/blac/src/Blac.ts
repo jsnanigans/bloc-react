@@ -63,12 +63,16 @@ export class Blac {
 
   static enableLog = false;
   log = (...args: any[]) => {
-    if (Blac.enableLog) console.log(`☢️ [Blac ${this.createdAt}]`, ...args);
+    if (Blac.enableLog) console.warn(`☢️ [Blac ${this.createdAt}]`, ...args);
   };
 
   static getInstance(): Blac {
     return Blac.instance;
   }
+
+  static warn = (message: string) => {
+    console.warn(`🚨 [Blac ${Blac.instance.createdAt}]`, message);
+  };
 
   resetInstance(): void {
     this.log('Reset Blac instance');
@@ -207,7 +211,7 @@ export class Blac {
     blocClass: BlocConstructor<B>,
     id: BlocInstanceId,
     props?: InferPropsFromGeneric<B>,
-    instanceRef?: any,
+    instanceRef?: string,
   ): InstanceType<BlocConstructor<B>> {
     const base = blocClass as unknown as BlocBaseAbstract;
 
@@ -231,7 +235,7 @@ export class Blac {
       id?: BlocInstanceId;
       props?: InferPropsFromGeneric<B>;
       reconnect?: boolean;
-      instanceRef?: any;
+      instanceRef?: string;
     } = {},
   ): InstanceType<B> {
     const isIsolated = (blocClass as InstanceType<B>).isolated;
