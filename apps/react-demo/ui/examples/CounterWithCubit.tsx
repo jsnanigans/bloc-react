@@ -1,5 +1,5 @@
 import { Cubit } from 'blac';
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import { useBloc } from '@blac/react';
 
 class CounterCubit extends Cubit<number> {

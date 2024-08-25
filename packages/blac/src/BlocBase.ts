@@ -10,6 +10,7 @@ export abstract class BlocBase<S = any, P = any> {
   static keepAlive = false;
   static isBlacClass = true;
   static addons?: BlacAddon[];
+  public _keepAlive = false;
   public _addons?: BlacAddon[];
   public _isolated = false;
   public _isBlacLive = true;
@@ -26,6 +27,7 @@ export abstract class BlocBase<S = any, P = any> {
     this._id = this.constructor.name;
     this._isolated = (this.constructor as any).isolated;
     this._addons = (this.constructor as any).addons;
+    this._keepAlive = (this.constructor as any).keepAlive;
     this._connectAddons();
   }
 
@@ -52,9 +54,22 @@ export abstract class BlocBase<S = any, P = any> {
     this._observer.dispose();
   }
 
-  _resurrect() {
-    this._blac.report(BlacLifecycleEvent.BLOC_RESURRECTED, this);
-  }
+  _consumers = new Set<string>();
+  _addConsumer = (consumerId: string) => {
+    this._consumers.add(consumerId);
+    this._blac.report(BlacLifecycleEvent.BLOC_CONSUMER_ADDED, this, {
+      consumerId,
+    });
+  };
+
+  _removeConsumer = (consumerId: string) => {
+    if (this._keepAlive) return;
+
+    this._consumers.delete(consumerId);
+    this._blac.report(BlacLifecycleEvent.BLOC_CONSUMER_REMOVED, this, {
+      consumerId,
+    });
+  };
 
   _connectAddons = () => {
     const { _addons: addons } = this;
@@ -86,10 +101,10 @@ export abstract class BlocBase<S = any, P = any> {
     this._oldState = oldState;
     this._observer.notify(newState, oldState, action);
 
-    this._blac.report(BlacLifecycleEvent.STATE_CHANGED, this, {
-      newState,
-      oldState,
-    });
+    // this._blac.report(BlacLifecycleEvent.STATE_CHANGED, this, {
+    //   newState,
+    //   oldState,
+    // });
   };
 
   _onEvent(event: BlacEvent<any>): void {}

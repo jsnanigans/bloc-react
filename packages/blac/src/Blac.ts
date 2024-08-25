@@ -1,35 +1,24 @@
-import { BlocBase, BlocInstanceId } from './BlocBase';
+import { BlocBase, BlocInstanceId } from "./BlocBase";
 import {
   BlocBaseAbstract,
   BlocConstructor,
   InferPropsFromGeneric,
-} from './types';
-import { BlacPlugin } from './BlacPlugin';
-import BlacEvent from './BlacEvent';
+} from "./types";
+import { BlacPlugin } from "./BlacPlugin";
+import BlacEvent from "./BlacEvent";
 
 export interface BlacConfig {
   exposeBlacInstance?: boolean;
 }
 
 export enum BlacLifecycleEvent {
-  BLOC_DISPOSED = 'BLOC_DISPOSED',
-  BLOC_CREATED = 'BLOC_CREATED',
-  BLOC_RESURRECTED = 'BLOC_RESURRECTED',
-  LISTENER_REMOVED = 'LISTENER_REMOVED',
-  LISTENER_ADDED = 'LISTENER_ADDED',
-  STATE_CHANGED = 'STATE_CHANGED',
-}
-
-export interface EventParams {
-  [BlacLifecycleEvent.BLOC_DISPOSED]: undefined;
-  [BlacLifecycleEvent.BLOC_CREATED]: undefined;
-  [BlacLifecycleEvent.BLOC_RESURRECTED]: undefined;
-  [BlacLifecycleEvent.LISTENER_REMOVED]: undefined;
-  [BlacLifecycleEvent.LISTENER_ADDED]: undefined;
-  [BlacLifecycleEvent.STATE_CHANGED]: {
-    newState: any;
-    oldState: any;
-  };
+  BLOC_DISPOSED = "BLOC_DISPOSED",
+  BLOC_CREATED = "BLOC_CREATED",
+  LISTENER_REMOVED = "LISTENER_REMOVED",
+  LISTENER_ADDED = "LISTENER_ADDED",
+  STATE_CHANGED = "STATE_CHANGED",
+  BLOC_CONSUMER_REMOVED = "BLOC_CONSUMER_REMOVED",
+  BLOC_CONSUMER_ADDED = "BLOC_CONSUMER_ADDED",
 }
 
 export class Blac {
@@ -51,7 +40,7 @@ export class Blac {
   }
 
   dispatchEvent = <T>(event: BlacEvent<T>) => {
-    this.log('Broadcast signal', event);
+    this.log("Broadcast signal", event);
 
     const allBlocs = Array.from(this.blocInstanceMap.values());
     allBlocs.forEach((bloc) => {
@@ -75,7 +64,7 @@ export class Blac {
   };
 
   resetInstance(): void {
-    this.log('Reset Blac instance');
+    this.log("Reset Blac instance");
     Blac.instance = new Blac({
       __unsafe_ignore_singleton: true,
     });
@@ -85,14 +74,14 @@ export class Blac {
     // check if already added
     const index = this.pluginList.findIndex((p) => p.name === plugin.name);
     if (index !== -1) return;
-    this.log('Add plugin', plugin.name);
+    this.log("Add plugin", plugin.name);
     this.pluginList.push(plugin);
   };
 
   reportToPlugins = <B extends BlacLifecycleEvent>(
     event: B,
     bloc: BlocBase<any, any>,
-    params?: EventParams[B],
+    params?: any,
   ) => {
     this.pluginList.forEach((plugin) => {
       plugin.onEvent(event, bloc, params);
@@ -102,24 +91,16 @@ export class Blac {
   report = <B extends BlacLifecycleEvent>(
     event: B,
     bloc: BlocBase<any, any>,
-    params?: EventParams[B],
+    params?: any,
   ) => {
-    const base = bloc.constructor as unknown as BlocBaseAbstract;
-
     this.log(event, bloc, params);
 
     switch (event) {
       case BlacLifecycleEvent.BLOC_DISPOSED:
         this.disposeBloc(bloc);
         break;
-      case BlacLifecycleEvent.LISTENER_REMOVED:
-        if (bloc._observer.size === 0 && !base.keepAlive) bloc._dispose();
-        break;
-      case BlacLifecycleEvent.LISTENER_ADDED:
-        if (bloc._observer.size <= 1) bloc._resurrect();
-        break;
-      case BlacLifecycleEvent.BLOC_RESURRECTED:
-        this.resurrectBloc(bloc);
+      case BlacLifecycleEvent.BLOC_CONSUMER_REMOVED:
+        if (bloc._consumers.size === 0 && bloc._observer.size === 0) bloc._dispose();
         break;
     }
 
@@ -133,16 +114,6 @@ export class Blac {
       this.unregisterIsolatedBlocInstance(bloc);
     } else {
       this.unregisterBlocInstance(bloc);
-    }
-  };
-
-  resurrectBloc = (bloc: BlocBase<any, any>): void => {
-    const base = bloc.constructor as unknown as BlocBaseAbstract;
-    bloc._isBlacLive = true;
-    if (base.isolated) {
-      this.registerIsolatedBlocInstance(bloc);
-    } else {
-      this.registerBlocInstance(bloc);
     }
   };
 
@@ -168,7 +139,10 @@ export class Blac {
     if (base.isolated) return undefined;
 
     const key = this.createBlocInstanceMapKey(blocClass.name, id);
-    return this.blocInstanceMap.get(key) as InstanceType<BlocConstructor<B>>;
+    const found = this.blocInstanceMap.get(key) as InstanceType<
+      BlocConstructor<B>
+    >;
+    return found;
   }
 
   registerIsolatedBlocInstance(bloc: BlocBase<any, any>): void {

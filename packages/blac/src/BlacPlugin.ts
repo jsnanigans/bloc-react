@@ -1,5 +1,5 @@
 import { BlocBase } from './BlocBase';
-import { BlacLifecycleEvent, EventParams } from './Blac';
+import { BlacLifecycleEvent } from './Blac';
 
 export interface BlacPlugin {
   name: string;
@@ -7,6 +7,6 @@ export interface BlacPlugin {
   onEvent<B extends BlacLifecycleEvent>(
     event: B,
     bloc: BlocBase<any>,
-    params?: EventParams[B],
+    params?: any,
   ): void;
 }

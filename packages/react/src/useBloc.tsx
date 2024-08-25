@@ -7,16 +7,17 @@ import {
   BlocHookDependencyArrayFn,
   BlocState,
   InferPropsFromGeneric,
-} from 'blac';
+} from "blac";
 import {
   useEffect,
   useId,
   useLayoutEffect,
   useMemo,
   useRef,
+  useState,
   useSyncExternalStore,
-} from 'react';
-import externalBlocStore from './externalBlocStore';
+} from "react";
+import externalBlocStore from "./externalBlocStore";
 
 type HookTypes<B extends BlocConstructor<BlocGeneric>> = [
   BlocState<InstanceType<B>>,
@@ -49,12 +50,14 @@ export class UseBlocClass {
       blocId = rid;
     }
 
-    const resolvedBloc = Blac.getInstance().getBloc(bloc, {
-      id: blocId,
-      props: props as any,
-      reconnect: false,
-      instanceRef: rid,
-    }) as InstanceType<B>;
+    const [resolvedBloc, setResolvedBloc] = useState(
+      Blac.getInstance().getBloc(bloc, {
+        id: blocId,
+        props: props as any,
+        reconnect: false,
+        instanceRef: rid,
+      }) as InstanceType<B>,
+    );
 
     if (!resolvedBloc) {
       throw new Error(`useBloc: could not resolve: ${bloc.name || bloc}`);
@@ -73,7 +76,7 @@ export class UseBlocClass {
       if (dependencySelector) {
         return dependencySelector(newState, oldState);
       }
-      if (typeof newState !== 'object') {
+      if (typeof newState !== "object") {
         return defaultDependencySelector(newState, oldState);
       }
 
@@ -100,7 +103,7 @@ export class UseBlocClass {
 
     const returnState: BlocState<InstanceType<B>> = useMemo(() => {
       try {
-        if (typeof state === 'object') {
+        if (typeof state === "object") {
           return new Proxy(state as any, {
             get(_, prop) {
               usedKeys.current.add(prop as string);
@@ -111,7 +114,7 @@ export class UseBlocClass {
           });
         }
       } catch (error) {
-        Blac.instance.log('useBloc Error', error);
+        Blac.instance.log("useBloc Error", error);
       }
       return state;
     }, [state, usedKeys, instanceKeys]);
@@ -128,6 +131,23 @@ export class UseBlocClass {
         });
       };
     }, [renderInstance]);
+
+    useEffect(() => {
+      resolvedBloc._addConsumer(rid);
+
+      if (resolvedBloc._consumers.size !== 0) {
+        setResolvedBloc(
+          Blac.getInstance().getBloc(bloc, {
+            id: blocId,
+            props: props as any,
+            reconnect: false,
+            instanceRef: rid,
+          }) as InstanceType<B>,
+        );
+      }
+
+      return () => resolvedBloc._removeConsumer(rid);
+    }, []);
 
     return [returnState, resolvedBloc];
   }
