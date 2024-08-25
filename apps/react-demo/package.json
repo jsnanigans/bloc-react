@@ -3,12 +3,13 @@
   "version": "0.0.16",
   "license": "MIT",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --port 3001",
     "build": "vite build",
     "prettier": "prettier --write ./src"
   },
   "devDependencies": {
-    "@blac/react": "*",
+    "@blac/react": "workspace:*",
+    "blac": "workspace:*",
     "@types/react": "^18.3.3",
     "@types/react-highlight": "^0.12.8",
     "@vitejs/plugin-react": "^4.3.1",
