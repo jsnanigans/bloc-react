@@ -1,18 +1,40 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": ["**/.env.*local"],
+  "globalEnv": ["VITE_*"],
+  "ui": "tui",
   "tasks": {
     "build": {
-      "outputs": [
-        "dist/**"
-      ]
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", "generated/**"]
     },
-    "dev": {},
-    "pub:patch": {},
+    "check-types": {
+      "dependsOn": ["^check-types"]
+    },
     "lint": {},
     "test": {},
     "test:watch": {
-      "cache": false,
-      "persistent": true
+      "persistent": true,
+      "interactive": true,
+      "cache": false
+    },
+    "dev": {
+      "persistent": true,
+      "cache": false
+    },
+    "sb": {
+      "persistent": true,
+      "cache": false
+    },
+    "generate:wcl": {},
+    "generate:api:dev": {
+      "cache": false
+    },
+    "generate:api:prod": {
+      "cache": false
+    },
+    "generate:api:qa": {
+      "cache": false
     }
   }
 }

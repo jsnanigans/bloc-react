@@ -1,7 +1,0 @@
-node_modules
-coverage
-.DS_Store
-.env.local
-devtools/tool
-devtools/dist
-dist
