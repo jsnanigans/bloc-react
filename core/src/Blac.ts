@@ -23,7 +23,7 @@ export enum BlacLifecycleEvent {
 
 export class Blac {
   static instance: Blac = new Blac();
-  createdAt = Date.now();
+  createdAt: number = Date.now();
   static getAllBlocs = Blac.instance.getAllBlocs;
   static addPlugin = Blac.instance.addPlugin;
   blocInstanceMap: Map<string, BlocBase<any, any>> = new Map();
@@ -39,7 +39,7 @@ export class Blac {
     Blac.instance = this;
   }
 
-  dispatchEvent = <T>(event: BlacEvent<T>) => {
+  dispatchEvent = <T>(event: BlacEvent<T>): void => {
     this.log('Broadcast signal', event);
 
     const allBlocs = Array.from(this.blocInstanceMap.values());
@@ -51,7 +51,7 @@ export class Blac {
   static dispatchEvent = Blac.instance.dispatchEvent;
 
   static enableLog = false;
-  log = (...args: any[]) => {
+  log = (...args: any[]): void => {
     if (Blac.enableLog) console.warn(`☢️ [Blac ${this.createdAt}]`, ...args);
   };
 
@@ -59,11 +59,11 @@ export class Blac {
     return Blac.instance;
   }
 
-  static warn = (message: string, ...args: unknown[]) => {
+  static warn = (message: string, ...args: unknown[]): void => {
     console.warn(`🚨 [Blac ${Blac.instance.createdAt}]`, message, ...args);
   };
 
-  static error = (message: string, ...args: unknown[]) => {
+  static error = (message: string, ...args: unknown[]): void => {
     console.error(`🚨 [Blac ${Blac.instance.createdAt}]`, message, ...args);
   };
 
@@ -86,7 +86,7 @@ export class Blac {
     event: B,
     bloc: BlocBase<any, any>,
     params?: any,
-  ) => {
+  ): void => {
     this.pluginList.forEach((plugin) => {
       plugin.onEvent(event, bloc, params);
     });
@@ -96,7 +96,7 @@ export class Blac {
     event: B,
     bloc: BlocBase<any, any>,
     params?: any,
-  ) => {
+  ): void => {
     this.log(event, bloc, params);
 
     switch (event) {

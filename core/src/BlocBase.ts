@@ -15,11 +15,11 @@ export abstract class BlocBase<S = any, P = any> {
   public _isolated = false;
   public _isBlacLive = true;
   public _observer: BlacObservable<any>;
-  public _blac = Blac.getInstance();
+  public _blac: Blac = Blac.getInstance();
   public _id: BlocInstanceId;
   public _instanceRef?: string;
   public _keepAlive = false;
-  public readonly _createdAt = Date.now();
+  public readonly _createdAt: number = Date.now();
   defaultDependencySelector: DependencySelector<S> | undefined;
 
   constructor(initialState: S) {
@@ -41,7 +41,7 @@ export abstract class BlocBase<S = any, P = any> {
     return this._state;
   }
 
-  get _name() {
+  get _name(): string {
     return this.constructor.name;
   }
 
@@ -51,20 +51,20 @@ export abstract class BlocBase<S = any, P = any> {
     this._id = id;
   };
 
-  _dispose() {
+  _dispose(): void {
     this._blac.report(BlacLifecycleEvent.BLOC_DISPOSED, this);
     this._observer.dispose();
   }
 
-  _consumers = new Set<string>();
-  _addConsumer = (consumerId: string) => {
+  _consumers: Set<string> = new Set<string>();
+  _addConsumer = (consumerId: string): void => {
     this._consumers.add(consumerId);
     this._blac.report(BlacLifecycleEvent.BLOC_CONSUMER_ADDED, this, {
       consumerId,
     });
   };
 
-  _removeConsumer = (consumerId: string) => {
+  _removeConsumer = (consumerId: string): void => {
     this._consumers.delete(consumerId);
     this._blac.report(BlacLifecycleEvent.BLOC_CONSUMER_REMOVED, this, {
       consumerId,

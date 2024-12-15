@@ -23,7 +23,7 @@ export class BlacObservable<S> {
     return this._observers.size;
   }
 
-  get observers() {
+  get observers(): Set<BlacObserver<S>> {
     return this._observers;
   }
 

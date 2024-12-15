@@ -13,7 +13,7 @@ export abstract class Bloc<S, A, P = any> extends BlocBase<S, P> {
    * Add a new action, the reducer should digest the action and update the state accordingly
    * @param action: action t obe sent to the reducer
    */
-  add = (action: A) => {
+  add = (action: A): void => {
     const oldState = this.state;
     const newState = this.reducer(action, this.state);
     this._pushState(newState, oldState, action);
