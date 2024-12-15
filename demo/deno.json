@@ -1,0 +1,8 @@
+{
+  "name": "@blac/demo",
+  "version": "0.1.0",
+  "exports": "./src/main.tsx",
+  "fmt": {
+    "semiColons": false
+  }
+}

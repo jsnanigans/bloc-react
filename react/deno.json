@@ -1,0 +1,11 @@
+{
+  "name": "@blac/react",
+  "version": "0.1.0",
+  "exports": "./src/index.ts",
+  "fmt": {
+    "semiColons": false
+  },
+  "imports": {
+    "react": "npm:react@^19.0.0"
+  }
+}
