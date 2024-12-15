@@ -1,5 +1,5 @@
-import { BlocBase, BlocInstanceId } from '../BlocBase';
-import BlacAddon, { BlacAddonEmit, BlacAddonInit } from './BlacAddon';
+import { BlocBase, BlocInstanceId } from '../BlocBase.ts';
+import BlacAddon, { BlacAddonEmit, BlacAddonInit } from './BlacAddon.ts';
 
 type StorageType = 'localStorage' | 'sessionStorage';
 

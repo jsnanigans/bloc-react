@@ -1,1 +1,1 @@
-export * from './Persist';
+export * from './Persist.ts';

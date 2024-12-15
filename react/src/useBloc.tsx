@@ -15,7 +15,7 @@ import {
   useRef,
   useState,
   useSyncExternalStore,
-} from 'npm:react';
+} from 'react';
 import externalBlocStore from './externalBlocStore.ts';
 
 type HookTypes<B extends BlocConstructor<BlocGeneric>> = [

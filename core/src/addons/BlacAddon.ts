@@ -1,4 +1,4 @@
-import { BlocBase } from '../BlocBase';
+import { BlocBase } from '../BlocBase.ts';
 
 export type BlacAddonInit = (bloc: BlocBase<any>) => void;
 
