@@ -1,13 +1,13 @@
 import { afterEach, describe, expect, it, test, vi } from 'vitest';
-import { Blac, BlacLifecycleEvent } from './Blac';
-import { Cubit } from './Cubit';
+import { Blac, BlacLifecycleEvent } from './Blac.ts';
+import { Cubit } from './Cubit.ts';
 
 class ExampleBloc extends Cubit<undefined> {}
 class ExampleBlocKeepAlive extends Cubit<undefined> {
-  static keepAlive = true;
+  static override keepAlive = true;
 }
 class ExampleBlocIsolated extends Cubit<undefined> {
-  static isolated = true;
+  static override isolated = true;
 }
 
 afterEach(() => {

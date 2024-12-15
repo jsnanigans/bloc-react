@@ -1,9 +1,9 @@
-import { render } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { Cubit } from "blac-next";
-import React, { FC } from "react";
-import { beforeEach, expect, test } from "vitest";
-import { useBloc } from "../src";
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { Cubit } from '@blac/core';
+import React, { FC } from 'react';
+import { beforeEach, expect, test } from 'vitest';
+import { useBloc } from '@blac/react';
 
 class CounterCubit extends Cubit<
   { count: number; name: string },
@@ -12,7 +12,7 @@ class CounterCubit extends Cubit<
   constructor(props: { initialState?: number } = {}) {
     super({
       count: props.initialState ?? 0,
-      name: "John Doe",
+      name: 'John Doe',
     });
   }
 
@@ -32,7 +32,7 @@ const Counter: FC<{ num: number; id: string }> = ({ num, id }) => {
         +1
       </button>
       <button
-        onClick={() => updateName("new name")}
+        onClick={() => updateName('new name')}
         data-testid={`${id}-updateName`}
       >
         updateName
@@ -46,7 +46,7 @@ beforeEach(() => {
   renderCountTotal = 0;
 });
 
-test("all instances should get the same state", async () => {
+test('all instances should get the same state', async () => {
   const { container } = render(
     <>
       <Counter num={3442} id="1" />
@@ -56,17 +56,17 @@ test("all instances should get the same state", async () => {
 
   const label1 = container.querySelector('[data-testid="1-label"]');
   const label2 = container.querySelector('[data-testid="2-label"]');
-  expect(label1).toHaveTextContent("3442");
-  expect(label2).toHaveTextContent("3442");
+  expect(label1).toHaveTextContent('3442');
+  expect(label2).toHaveTextContent('3442');
   expect(renderCountTotal).toBe(2);
 
   await userEvent.click(container.querySelector('[data-testid="1-increment"]'));
-  expect(label1).toHaveTextContent("3443");
-  expect(label2).toHaveTextContent("3443");
+  expect(label1).toHaveTextContent('3443');
+  expect(label2).toHaveTextContent('3443');
   expect(renderCountTotal).toBe(6);
 
   await userEvent.click(container.querySelector('[data-testid="2-increment"]'));
-  expect(label1).toHaveTextContent("3444");
-  expect(label2).toHaveTextContent("3444");
+  expect(label1).toHaveTextContent('3444');
+  expect(label2).toHaveTextContent('3444');
   expect(renderCountTotal).toBe(8);
 });
