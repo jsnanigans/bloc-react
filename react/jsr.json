@@ -1,0 +1,8 @@
+{
+  "name": "@blac/react",
+  "version": "0.1.0",
+  "exports": "./src/index.ts",
+  "imports": {
+    "react": "npm:react@18"
+  }
+}
