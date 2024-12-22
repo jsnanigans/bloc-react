@@ -1,0 +1,1 @@
+{"version":"2.1.8","results":[[":tests/singleComponentStateDependencies.test.tsx",{"duration":145.2145840000012,"failed":false}],[":tests/singleComponentStateIsolated.test.tsx",{"duration":75.31829199999993,"failed":false}],[":tests/singleComponentStateShared.test.tsx",{"duration":41.737207999998645,"failed":false}]]}

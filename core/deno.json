@@ -1,0 +1,14 @@
+{
+  "name": "@blac/core",
+  "version": "0.1.0",
+  "tasks": {
+    "test": "deno run -A --node-modules-dir npm:vitest"
+  },
+  "exports": "./src/index.ts",
+  "fmt": {
+    "semiColons": false
+  },
+  "imports": {
+    "vitest": "npm:vitest@^2.1.8"
+  }
+}
