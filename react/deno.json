@@ -1,6 +1,6 @@
 {
   "name": "@blac/react",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "tasks": {
     "test": "deno run -A --node-modules-dir npm:vitest"
   },
@@ -9,9 +9,9 @@
     "semiColons": false
   },
   "imports": {
-    "react": "npm:react@18",
-    "@types/react": "npm:@types/react@18",
-    "react-dom": "npm:react-dom@18",
+    "react": "npm:react@^18",
+    "@types/react": "npm:@types/react@^18",
+    "react-dom": "npm:react-dom@^18",
     "@testing-library/react": "npm:@testing-library/react@16",
     "global-jsdom": "npm:global-jsdom@24",
     "@std/assert": "jsr:@std/assert@1",
